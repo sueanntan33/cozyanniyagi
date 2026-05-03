@@ -111,7 +111,7 @@ textarea,input{caret-color:var(--rose-dark);}
 .mini-cal{background:white;border-radius:12px;padding:8px 6px;border:1.5px solid #F0E8E0;box-shadow:0 1px 6px rgba(0,0,0,.05);}
 .mc-month{font-size:11px;font-weight:900;text-align:center;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;}
 .mc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1.5px;}
-.mcd{font-size:9px;text-align:center;padding:2px 0;color:var(--ink-mid);font-weight:700;border-radius:3px;}
+.mcd{font-size:9px;text-align:center;padding:2px 0 5px;color:var(--ink-mid);font-weight:700;border-radius:3px;position:relative;}
 .mcd.hd{color:var(--ink-light);font-weight:800;font-size:8px;}
 .mcd.su{color:#D08080;}
 .mcd.td{background:var(--rose);color:white;border-radius:50%;font-weight:900;}
@@ -626,6 +626,8 @@ textarea,input{caret-color:var(--rose-dark);}
     <button class="j-back" onclick="closeJournal()">◀ Cover</button>
     <div class="j-topbar-title">My 2026 Journal 🌸</div>
     <button class="j-today-btn" id="homeBtn" onclick="showSection('directory')" style="background:linear-gradient(135deg,#F0C8D0,#D0C8E8);color:var(--rose-deep);border:none;border-radius:20px;padding:6px 12px;font-size:11px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;display:none;">🏠 Home</button>
+    <button onclick="toggleDarkMode()" id="darkToggle" style="background:none;border:none;font-size:18px;cursor:pointer;padding:4px;line-height:1;" title="Toggle dark mode">🌙</button>
+    <button onclick="showSection('search')" style="background:none;border:none;font-size:18px;cursor:pointer;padding:4px;line-height:1;" title="Search">🔍</button>
     <button class="j-today-btn" id="todayBtn" onclick="goToday()">✦ Today</button>
   </div>
   <div class="j-tabs" id="tabBar" style="display:none;">
@@ -662,6 +664,7 @@ textarea,input{caret-color:var(--rose-dark);}
       <div class="page-inner" id="pageInner"></div>
     </div>
   </div>
+
 </div>
 
 <script>
@@ -765,6 +768,15 @@ const ACCENT_STRIPS={
   travel:"linear-gradient(90deg,#A8C8E8,#C8D8E8,#A8D8C8)",
   focus:"linear-gradient(90deg,#D0C8E8,#C0B8E0,#D8D0F0)",
   biblereflect:"linear-gradient(90deg,#E8D8A8,#F0E0B0,#E8D0A0)",
+  social:"linear-gradient(90deg,#F0A8C0,#E890B8,#D870A0)",
+  mood:"linear-gradient(90deg,#C8B8E8,#E8C0D8,#F0D0B8)",
+  prayer:"linear-gradient(90deg,#E8D890,#F0E8A8,#E0D880)",
+  search:"linear-gradient(90deg,#C8D8E8,#B8C8E0,#C0D0E8)",
+  tags:"linear-gradient(90deg,#D8C8E8,#C8B8E0,#D0C8F0)",
+  foodlog:"linear-gradient(90deg,#C8E8D8,#A8D8C0,#C8F0D8)",
+  hobbies:"linear-gradient(90deg,#E8C8F0,#D0B0E8,#C8B8F0)",
+  mood:"linear-gradient(90deg,#C8B8E8,#E8C0D8,#F0D0B8)",
+  prayer:"linear-gradient(90deg,#E8D890,#F0E8A8,#E0D880)",
   monthly_reset:"linear-gradient(90deg,#D0C8E8,#C8C0F0,#D8C8F0)",
   weekly_reset:"linear-gradient(90deg,#C0D8C8,#B8DCC0,#C8ECD0)",
   house:"linear-gradient(90deg,#B0C8C0,#90B8B0,#70A898)",
@@ -783,7 +795,7 @@ const ACCENT_STRIPS={
 
 function showSection(sec){
   curSection=sec;
-  const allTabs=["directory","year","months","weeks","days","todo","kanban","bible","inventory","medicine","bp","pages","diary","monthly_reset","weekly_reset","house","goals","weekly_plan","exercise","budget","habits","shopping","links","reading","passwords","onemtg","standalomtg","profile","backup","travel","focus","biblereflect"];
+  const allTabs=["directory","year","months","weeks","days","todo","kanban","bible","inventory","medicine","bp","pages","diary","monthly_reset","weekly_reset","house","goals","weekly_plan","exercise","budget","habits","shopping","links","reading","passwords","onemtg","standalomtg","profile","backup","travel","focus","biblereflect","social","mood","prayer","search","tags","foodlog","hobbies"];
   allTabs.forEach(s=>{
     const el=document.getElementById("tab-"+s);
     if(el)el.classList.toggle("active",s===sec);
@@ -799,7 +811,7 @@ function showSection(sec){
   if(todayBtn)todayBtn.style.display=sec==="directory"?"none":"";
   document.getElementById("accentStrip").style.background=ACCENT_STRIPS[sec]||ACCENT_STRIPS.year;
   animatePage();
-  const fns={directory:renderDirectory,year:renderYear,months:renderMonthSel,weeks:renderWeekSel,days:renderDaySel,todo:renderTodo,kanban:renderKanban,bible:renderBible,inventory:renderInventory,medicine:renderMedicine,bp:renderBP,pages:renderPages,diary:renderDiary,monthly_reset:renderMonthlyReset,weekly_reset:renderWeeklyReset,house:renderHouse,goals:renderGoals,weekly_plan:renderWeeklyPlan,exercise:renderExercise,budget:renderBudget,habits:renderHabits,shopping:renderShopping,links:renderLinks,reading:renderReading,passwords:renderPasswords,onemtg:renderOneOnOne,standalomtg:renderStandaloneMtg,profile:renderProfile,backup:renderBackup,travel:renderTravel,focus:renderFocus,biblereflect:renderBibleReflect};
+  const fns={directory:renderDirectory,year:renderYear,months:renderMonthSel,weeks:renderWeekSel,days:renderDaySel,todo:renderTodo,kanban:renderKanban,bible:renderBible,inventory:renderInventory,medicine:renderMedicine,bp:renderBP,pages:renderPages,diary:renderDiary,monthly_reset:renderMonthlyReset,weekly_reset:renderWeeklyReset,house:renderHouse,goals:renderGoals,weekly_plan:renderWeeklyPlan,exercise:renderExercise,budget:renderBudget,habits:renderHabits,shopping:renderShopping,links:renderLinks,reading:renderReading,passwords:renderPasswords,onemtg:renderOneOnOne,standalomtg:renderStandaloneMtg,profile:renderProfile,backup:renderBackup,travel:renderTravel,focus:renderFocus,biblereflect:renderBibleReflect,social:renderSocial,mood:renderMood,prayer:renderPrayer,search:renderSearch,tags:renderTags,foodlog:renderFoodLog,hobbies:renderHobbies};
   if(fns[sec])fns[sec]();
 }
 function animatePage(){
@@ -809,6 +821,9 @@ function animatePage(){
 
 // ── YEARLY PAGE (with clickable dates) ────────────────────────────────────────
 function renderYear(){
+  // Build a set of dates that have events for O(1) lookup
+  const evDates=new Set(calEvents().map(e=>e.date));
+
   let minis="";
   MONTHS.forEach((m,mi)=>{
     let cells="";
@@ -820,7 +835,11 @@ function renderYear(){
       const isT=new Date(2026,mi,d).toDateString()===new Date().toDateString();
       const dow=(m.start+d-1)%7;
       const wn=weekNum(curDOY);
-      cells+=`<div class="mcd link ${isT?"td":""} ${dow===0?"su":""}" title="${m.name} ${d} · Day ${curDOY} · Week ${wn}" onclick="goDOY(${curDOY})">${d}</div>`;
+      const dateStr=`2026-${String(mi+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+      const hasEv=evDates.has(dateStr);
+      cells+=`<div class="mcd link ${isT?"td":""} ${dow===0?"su":""}" title="${m.name} ${d} · Day ${curDOY} · Week ${wn}" onclick="goDOY(${curDOY})" style="position:relative;">
+        ${d}${hasEv&&!isT?`<span style="position:absolute;bottom:1px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:${m.accent};display:block;"></span>`:""}
+      </div>`;
     }
     minis+=`<div class="mini-cal" style="border-color:${m.border}">
       <div class="mc-month" style="color:${m.dark};cursor:pointer;" onclick="renderMonth(${mi})">${m.emoji} ${m.short}</div>
@@ -909,14 +928,16 @@ function renderMonth(mi){
       const borderBottom=row<totalRows-1?"border-bottom:1px solid #F0E8F0;":"";
       const bg=isValid?(isSun||isSat?"rgba(240,200,200,.06)":"white"):"#FAFAFA";
 
-      calHtml+=`<div style="min-height:64px;padding:5px 5px 4px;${borderRight}${borderBottom}background:${bg};${isValid?"cursor:pointer;":""};position:relative;transition:background .12s;" ${isValid?`onclick="goDOY(${doy})" onmouseover="this.style.background='${m.bg}'" onmouseout="this.style.background='${bg}'"`:""}>`;
+      calHtml+=`<div style="min-height:64px;padding:5px 5px 4px;${borderRight}${borderBottom}background:${bg};${isValid?"cursor:pointer;":""};position:relative;transition:background .12s;min-width:0;overflow:hidden;" ${isValid?`onclick="goDOY(${doy})" onmouseover="this.style.background='${m.bg}'" onmouseout="this.style.background='${bg}'"`:""}>`;
 
       if(isValid){
         // Day number
         calHtml+=`<div style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:${isToday?"900":"700"};color:${isToday?"white":(isSun||isSat?"#D08080":"var(--ink)")};background:${isToday?`linear-gradient(135deg,${m.accent},${m.dark})`:"transparent"};margin-bottom:3px;">${dayNum}</div>`;
         // Event pills — show up to 2, then "+N more"
         dayEvs.slice(0,2).forEach(ev=>{
-          calHtml+=`<div style="width:100%;background:${ev.color||m.border}28;border-left:2.5px solid ${ev.color||m.accent};border-radius:0 4px 4px 0;padding:1px 4px;margin-bottom:2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:9px;font-weight:800;color:${ev.color||m.dark};">${ev.time?ev.time.slice(0,5)+" ":""}${ev.title}</div>`;
+          const shortTitle=ev.title.length>10?ev.title.slice(0,9)+"…":ev.title;
+          const shortTime=ev.time?ev.time.slice(0,5)+" ":"";
+          calHtml+=`<div style="width:100%;background:${ev.color||m.border}28;border-left:2.5px solid ${ev.color||m.accent};border-radius:0 4px 4px 0;padding:1px 3px;margin-bottom:2px;overflow:hidden;white-space:nowrap;text-overflow:clip;font-size:8px;font-weight:800;color:${ev.color||m.dark};max-width:100%;box-sizing:border-box;">${shortTime}${shortTitle}</div>`;
         });
         if(dayEvs.length>2){
           calHtml+=`<div style="font-size:8px;font-weight:800;color:var(--ink-light);padding:1px 4px;">+${dayEvs.length-2} more</div>`;
@@ -936,20 +957,49 @@ function renderMonth(mi){
 
   // Events list
   const monthEvs=eventsAll.filter(e=>e.date&&e.date.startsWith(monthStr)).sort((a,b)=>a.date.localeCompare(b.date));
-  const evListHtml=monthEvs.length?monthEvs.map(e=>{
+  const evColors=["#F0A8B8","#B4A8D8","#94C8A8","#F0C090","#90B8D8","#F0A8A8","#C8A8E0"];
+  const RECUR_LABELS={daily:"Daily",weekly:"Weekly",monthly:"Monthly",yearly:"Yearly"};
+
+  function evRow(e){
+    const isEditing=window.editingEvId===e.id;
     const d=new Date(e.date+"T12:00:00");
     const lbl=d.toLocaleDateString("en",{weekday:"short",month:"short",day:"numeric"});
+    if(isEditing){
+      return`<div style="background:#FFF8FC;border-radius:12px;padding:11px;margin-bottom:8px;border:1.5px solid ${e.color||m.accent};">
+        <div style="font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:${m.accent};margin-bottom:8px;">✏️ Edit Event</div>
+        <input id="ev-edit-title" value="${e.title.replace(/"/g,'&quot;')}" style="width:100%;border:1.5px solid #EEE0EC;border-radius:9px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--ink);background:white;outline:none;margin-bottom:7px;"/>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:7px;margin-bottom:7px;">
+          <input id="ev-edit-date" type="date" value="${e.date}" style="border:1.5px solid #EEE0EC;border-radius:9px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:white;outline:none;"/>
+          <input id="ev-edit-time" type="time" value="${e.time||""}" style="width:95px;border:1.5px solid #EEE0EC;border-radius:9px;padding:7px 9px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:white;outline:none;"/>
+        </div>
+        <div style="display:flex;gap:5px;margin-bottom:7px;" id="ev-edit-colors">
+          ${evColors.map(c=>`<div onclick="window.editEvColor='${c}';document.querySelectorAll('#ev-edit-colors div').forEach(d=>d.style.border='2px solid transparent');this.style.border='2px solid var(--ink)';" style="width:22px;height:22px;border-radius:50%;background:${c};cursor:pointer;border:2px solid ${(e.color||evColors[0])===c?"var(--ink)":"transparent"};transition:all .15s;"></div>`).join("")}
+        </div>
+        <div style="font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:5px;">🔁 Repeat</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px;" id="ev-edit-recur">
+          ${["none","daily","weekly","monthly","yearly"].map(r=>`<div onclick="window.editEvRecur='${r}';document.querySelectorAll('#ev-edit-recur div').forEach(d=>{d.style.background=d.dataset.r==='${r}'?'var(--rose)':'#F5F0F8';d.style.color=d.dataset.r==='${r}'?'white':'var(--ink-light)';});" data-r="${r}" style="font-size:10px;font-weight:800;padding:5px 10px;border-radius:20px;cursor:pointer;background:${(e.recur||'none')===r?'var(--rose)':'#F5F0F8'};color:${(e.recur||'none')===r?'white':'var(--ink-light)'};transition:all .15s;">${r==="none"?"Once":r.charAt(0).toUpperCase()+r.slice(1)}</div>`).join("")}
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="saveCalEvent('${e.id}',${mi})" style="flex:2;background:linear-gradient(135deg,${m.border},${m.accent});border:none;border-radius:9px;padding:8px;font-size:12px;font-weight:900;color:${m.dark};cursor:pointer;font-family:'Nunito',sans-serif;">✓ Save</button>
+          <button onclick="window.editingEvId=null;renderMonth(${mi})" style="flex:1;background:white;border:1.5px solid #EEE0EC;border-radius:9px;padding:8px;font-size:12px;font-weight:800;color:var(--ink-light);cursor:pointer;font-family:'Nunito',sans-serif;">Cancel</button>
+          <button onclick="deleteCalEvent('${e.id}');renderMonth(${mi})" style="width:34px;background:#FFF0F0;border:none;border-radius:9px;cursor:pointer;font-size:14px;">🗑️</button>
+        </div>
+      </div>`;
+    }
     return`<div style="display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid rgba(220,200,220,.15);">
       <div style="width:10px;height:10px;border-radius:50%;background:${e.color||m.accent};flex-shrink:0;"></div>
       <div style="flex:1;min-width:0;">
-        <div style="font-size:12px;font-weight:800;color:var(--ink);">${e.title}</div>
+        <div style="font-size:12px;font-weight:800;color:var(--ink);">${e.title}${e.recur&&e.recur!=="none"?` <span style="font-size:9px;font-weight:900;background:rgba(180,140,220,.15);color:#8060A8;border-radius:10px;padding:1px 6px;margin-left:3px;">🔁 ${RECUR_LABELS[e.recur]||e.recur}</span>`:""}</div>
         <div style="font-size:10px;font-weight:700;color:var(--ink-light);">${lbl}${e.time?" · "+e.time:""}</div>
       </div>
-      <button onclick="deleteCalEvent('${e.id}');renderMonth(${mi})" style="background:none;border:none;color:#D8C0C8;cursor:pointer;font-size:12px;">🗑️</button>
+      <button onclick="window.editingEvId='${e.id}';window.editEvColor='${e.color||evColors[0]}';window.editEvRecur='${e.recur||'none'}';renderMonth(${mi})" style="background:none;border:none;color:#C8B0C8;cursor:pointer;font-size:13px;padding:2px 4px;">✏️</button>
+      <button onclick="deleteCalEvent('${e.id}');renderMonth(${mi})" style="background:none;border:none;color:#D8C0C8;cursor:pointer;font-size:12px;padding:2px 4px;">🗑️</button>
     </div>`;
-  }).join(""):`<div style="font-size:12px;font-weight:700;color:var(--ink-light);padding:6px 0;">No events this month — add one below 🌸</div>`;
+  }
 
-  const evColors=["#F0A8B8","#B4A8D8","#94C8A8","#F0C090","#90B8D8","#F0A8A8","#C8A8E0"];
+  const evListHtml=monthEvs.length
+    ?monthEvs.map(e=>evRow(e)).join("")
+    :`<div style="font-size:12px;font-weight:700;color:var(--ink-light);padding:6px 0;">No events this month — add one below 🌸</div>`;
 
   document.getElementById("pageInner").innerHTML=`
     <div class="nav-row">
@@ -973,10 +1023,16 @@ function renderMonth(mi){
           <input id="ev-title-${mi}" style="border:1.5px solid #EEE0EC;border-radius:10px;padding:7px 11px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:#FAFAFA;outline:none;" placeholder="Event title..." onkeydown="if(event.key==='Enter')addCalEvent(${mi})"/>
           <input id="ev-time-${mi}" type="time" style="width:95px;border:1.5px solid #EEE0EC;border-radius:10px;padding:7px 9px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:#FAFAFA;outline:none;"/>
         </div>
-        <div style="display:flex;gap:7px;align-items:center;margin-bottom:8px;">
+        <div style="display:flex;gap:7px;align-items:center;margin-bottom:7px;">
           <input id="ev-date-${mi}" type="date" value="2026-${String(mi+1).padStart(2,"0")}-01" style="flex:1;border:1.5px solid #EEE0EC;border-radius:10px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:#FAFAFA;outline:none;"/>
           <div style="display:flex;gap:5px;" id="ev-colors-${mi}">
             ${evColors.map((c,i)=>`<div onclick="selEvColor('${c}',${mi},this)" style="width:20px;height:20px;border-radius:50%;background:${c};cursor:pointer;border:2.5px solid ${i===0?"var(--ink)":"transparent"};transition:all .15s;" data-col="${c}"></div>`).join("")}
+          </div>
+        </div>
+        <div style="margin-bottom:9px;">
+          <div style="font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:5px;">🔁 Repeat</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;" id="ev-recur-${mi}">
+            ${["none","daily","weekly","monthly","yearly"].map((r,ri)=>`<div onclick="window['selRecur_${mi}']='${r}';document.querySelectorAll('#ev-recur-${mi} div').forEach(d=>{d.style.background=d.dataset.r==='${r}'?'var(--rose)':'#F5F0F8';d.style.color=d.dataset.r==='${r}'?'white':'var(--ink-light)';});" data-r="${r}" style="font-size:10px;font-weight:800;padding:5px 10px;border-radius:20px;cursor:pointer;background:${ri===0?"var(--rose)":"#F5F0F8"};color:${ri===0?"white":"var(--ink-light)"};transition:all .15s;">${r==="none"?"Once":r.charAt(0).toUpperCase()+r.slice(1)}</div>`).join("")}
           </div>
         </div>
         <button onclick="addCalEvent(${mi})" style="width:100%;background:linear-gradient(135deg,${m.border},${m.accent});border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:900;color:${m.dark};cursor:pointer;font-family:'Nunito',sans-serif;">+ Add Event</button>
@@ -1228,15 +1284,9 @@ function renderDay(doy){
     ${todoHtml}
 
     <!-- ⑦ JOURNAL SECTIONS -->
-    <div class="day-section"><div class="day-lbl" style="color:${m.accent}">🙏 Morning Prayer</div><div class="journal-lines"><textarea class="journal-textarea" rows="3" placeholder="Lord, today I bring to You..." onchange="sv('d_pr_${doy}',this.value)">${prayer}</textarea></div></div>
-    <div class="day-section"><div class="day-lbl" style="color:${m.accent}">💕 Gratitude — 3 Things</div><div>
-      <div class="grat-line"><span class="grat-n">1</span><input class="grat-in" placeholder="I am grateful for..." value="${g1}" onchange="sv('d_g1_${doy}',this.value)"/></div>
-      <div class="grat-line"><span class="grat-n">2</span><input class="grat-in" placeholder="I am grateful for..." value="${g2}" onchange="sv('d_g2_${doy}',this.value)"/></div>
-      <div class="grat-line"><span class="grat-n">3</span><input class="grat-in" placeholder="I am grateful for..." value="${g3}" onchange="sv('d_g3_${doy}',this.value)"/></div>
-    </div></div>
-    <div class="day-section"><div class="day-lbl" style="color:${m.accent}">🎯 Today's Focus</div><input class="grat-in" style="border-bottom:1.5px solid ${m.border};padding:6px 0;font-size:13px;width:100%;" placeholder="The one thing I want to accomplish..." value="${focus}" onchange="sv('d_foc_${doy}',this.value)"/></div>
-    <div class="day-section"><div class="day-lbl" style="color:${m.accent}">📓 Journal — Write Freely</div><div class="journal-lines"><textarea class="journal-textarea" rows="8" placeholder="What's on your heart today? Write freely..." onchange="sv('d_j_${doy}',this.value)">${journal}</textarea></div></div>
-    <div class="day-section"><div class="day-lbl" style="color:${m.accent}">🌙 Evening Reflection</div><div class="journal-lines"><textarea class="journal-textarea" rows="4" placeholder="How did the day go? What did I learn? What am I proud of?" onchange="sv('d_ev_${doy}',this.value)">${evening}</textarea></div></div>
+    <div class="day-section"><div class="day-lbl" style="color:${m.accent}">🙏 Morning Prayer</div><div class="journal-lines"><textarea class="journal-textarea" rows="3" placeholder="Lord, today I bring to You..." oninput="sv('d_pr_${doy}',this.value)">${prayer}</textarea></div></div>
+    <div class="day-section"><div class="day-lbl" style="color:${m.accent}">📓 Journal — Write Freely</div><div class="journal-lines"><textarea class="journal-textarea" rows="8" placeholder="What's on your heart today? Write freely..." oninput="sv('d_j_${doy}',this.value)">${journal}</textarea></div></div>
+
   `;
 }
 function setMood(doy,i,btn){sv(`d_mo_${doy}`,i);btn.parentElement.querySelectorAll(".mood-b").forEach(b=>b.classList.remove("on"));btn.classList.add("on");}
@@ -1337,6 +1387,7 @@ function renderTodo(){
             <span class="td2-badge ${priBadgeCls(t.pri)}">${priLabel(t.pri)}</span>
             ${dateBadge(t.due)}
             ${t.isRecurring?`<span class="td2-badge" style="background:rgba(240,200,220,.18);color:var(--rose-dark);border:1px solid rgba(240,168,184,.4);">🔁</span>`:""} ${subs.length?`<span class="td2-badge b-subs">✅ ${subsDone}/${subs.length}</span>`:""}
+            ${(t.tags||[]).map(tag=>{const td=allTags().find(x=>x.name===tag);return`<span style="background:${td?td.color+"33":"#F0E8F8"};color:${td?td.color:"var(--rose-dark)"};border-radius:20px;padding:1px 8px;font-size:10px;font-weight:800;">#${tag}</span>`;}).join("")}
           </div>
         </div>
         <div class="td2-icons">
@@ -1543,6 +1594,11 @@ function openTaskModal(id){
     </div>
     <span class="tm-lbl">📝 Notes</span>
     <textarea class="tm-textarea" id="taskNoteArea" placeholder="Add notes, details, or context..." rows="3" onchange="updateTodoField('${id}','note',this.value)">${t.note||""}</textarea>
+    <span class="tm-lbl" style="margin-top:14px;">🏷️ Tags</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+      ${allTags().map(tag=>{const active=(t.tags||[]).includes(tag.name);return`<div onclick="toggleTaskTag('${id}','${tag.name}')" style="font-size:11px;font-weight:800;padding:4px 11px;border-radius:20px;cursor:pointer;background:${active?tag.color+"33":"rgba(200,180,220,.1)"};color:${active?tag.color:"var(--ink-light)"};border:1.5px solid ${active?tag.color:"transparent"};transition:all .15s;">#${tag.name}</div>`;}).join("")}
+      ${allTags().length===0?`<div style="font-size:11px;font-weight:700;color:var(--ink-light);">No tags yet — manage in More → 🏷️ Tags</div>`:""}
+    </div>
     <span class="tm-lbl" style="margin-top:14px;">✅ Subtasks (${subs.filter(s=>s.done).length}/${subs.length})</span>
     <div id="subtaskList">${subHtml||"<div style='font-size:12px;color:var(--ink-light);padding:6px 0;'>No subtasks yet</div>"}</div>
     <div class="subtask-add-row"><input class="subtask-input" id="subtaskText" placeholder="Add a subtask..." maxlength="60" onkeydown="if(event.key==='Enter')addSubtask('${id}')"/><button class="subtask-add-btn" onclick="addSubtask('${id}')">+ Add</button></div>
@@ -1802,63 +1858,121 @@ function delInv(id){sva("inventory",lda("inventory").filter(i=>i.id!==id));rende
 function renderMedicine(){
   document.getElementById("accentStrip").style.background="linear-gradient(90deg,#D8C8E8,#C8B8D8,#D0C0E0)";
   const meds=lda("medicines");
-  const taken=ldo("med_taken");
-  const dayKey=`med_${medDate}`;
-  const dayTaken=ldo(dayKey);
-  function prevMedDay(){const d=new Date(medDate+"T12:00:00");d.setDate(d.getDate()-1);medDate=d.toISOString().split("T")[0];renderMedicine();}
-  function nextMedDay(){const d=new Date(medDate+"T12:00:00");d.setDate(d.getDate()+1);medDate=d.toISOString().split("T")[0];renderMedicine();}
-  const allTodayTaken=meds.length>0&&meds.every(m=>MED_TIMES.every(t=>dayTaken[`${m.id}_${t}`]));
-  document.getElementById("pageInner").innerHTML=`
-    <div class="section-heading">Medicine Tracker</div>
-    <div class="section-sub">💊 Daily medication log</div>
-    <div class="divider"></div>
-    <div class="med-add-grid">
-      <input class="med-input" id="medName" placeholder="Medication name..." maxlength="40"/>
-      <input class="med-input" id="medDose" placeholder="Dosage (e.g. 10mg)..." maxlength="30"/>
-      <div class="med-add-full" style="display:flex;gap:8px;flex-wrap:wrap;" id="medTimeSel">
-        ${MED_TIMES.map(t=>`<label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--ink-mid);cursor:pointer;"><input type="checkbox" value="${t}" style="accent-color:#B4A8D8;width:14px;height:14px;"> ${t}</label>`).join("")}
-      </div>
-      <button class="med-add-btn med-add-full" onclick="addMed()">+ Add Medication</button>
-    </div>
-    <div class="med-date-nav">
-      <button class="med-date-btn" onclick="prevMedDay()">◀</button>
-      <div class="med-date-label">${fmtDate(medDate)}${medDate===tds()?" 🌸":""}</div>
-      <button class="med-date-btn" onclick="nextMedDay()">▶</button>
-      <button class="med-date-btn" onclick="medDate=tds();renderMedicine()" style="font-size:10px">Today</button>
-    </div>
-    ${allTodayTaken&&meds.length?`<div style="background:#EDFFF5;border:1.5px solid #90C8A8;border-radius:12px;padding:10px;text-align:center;margin-bottom:12px;font-size:13px;font-weight:800;color:#3A8860;">✅ All medications taken today!</div>`:""}
-    ${meds.length===0?`<div style="text-align:center;padding:24px;color:var(--ink-light);font-size:13px;font-weight:700;">💊 No medications yet. Add one above!</div>`:""}
-    ${meds.map(med=>{
-      const selectedTimes=med.times||["Morning"];
-      return`<div class="med-card">
-        <div class="med-card-top">
-          <div class="med-icon">💊</div>
-          <div><div class="med-name">${med.name}</div><div class="med-dose">${med.dose||""}${med.dose&&selectedTimes.length?" · ":""}${selectedTimes.join(", ")}</div></div>
-          <button class="med-del-btn" onclick="delMed('${med.id}')">✕</button>
+
+  function medCard(med){
+    const isEditing=window.editingMedId===med.id;
+    if(isEditing){
+      return`<div class="med-card" style="border-color:#B4A8D8;background:#F8F4FF;">
+        <div style="font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--lavender);margin-bottom:9px;">✏️ Editing</div>
+        <input id="edit-med-name" value="${med.name.replace(/"/g,'&quot;')}" style="width:100%;border:1.5px solid #B4A8D8;border-radius:9px;padding:8px 11px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--ink);background:white;outline:none;margin-bottom:7px;"/>
+        <input id="edit-med-dose" value="${(med.dose||'').replace(/"/g,'&quot;')}" placeholder="Dosage (e.g. 10mg)" style="width:100%;border:1.5px solid #EEE0EC;border-radius:9px;padding:8px 11px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:white;outline:none;margin-bottom:7px;"/>
+        <input id="edit-med-freq" value="${(med.freq||'').replace(/"/g,'&quot;')}" placeholder="Frequency (e.g. Once daily, Twice daily)" style="width:100%;border:1.5px solid #EEE0EC;border-radius:9px;padding:8px 11px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:white;outline:none;margin-bottom:7px;"/>
+        <div style="font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:6px;">Times</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+          ${MED_TIMES.map(t=>`<label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--ink-mid);cursor:pointer;"><input type="checkbox" value="${t}" ${(med.times||[]).includes(t)?"checked":""} style="accent-color:#B4A8D8;width:14px;height:14px;"> ${t}</label>`).join("")}
         </div>
-        <div class="med-times">
-          ${selectedTimes.map(t=>{const key=`${med.id}_${t}`;const taken=dayTaken[key];return`<div class="med-time-chk ${taken?"taken":""}" onclick="toggleMedTaken('${med.id}','${t}')">${taken?"✓":""} ${t}</div>`;}).join("")}
+        <input id="edit-med-notes" value="${(med.notes||'').replace(/"/g,'&quot;')}" placeholder="Notes (purpose, instructions...)" style="width:100%;border:1.5px solid #EEE0EC;border-radius:9px;padding:8px 11px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;color:var(--ink);background:white;outline:none;margin-bottom:10px;"/>
+        <div style="display:flex;gap:8px;">
+          <button onclick="saveMedEdit('${med.id}')" style="flex:2;background:linear-gradient(135deg,#C8B8E8,#A898D0);border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:900;color:white;cursor:pointer;font-family:'Nunito',sans-serif;">✓ Save</button>
+          <button onclick="window.editingMedId=null;renderMedicine()" style="flex:1;background:white;border:1.5px solid #EEE0EC;border-radius:10px;padding:9px;font-size:12px;font-weight:800;color:var(--ink-light);cursor:pointer;font-family:'Nunito',sans-serif;">Cancel</button>
         </div>
       </div>`;
-    }).join("")}
-    <div style="margin-top:14px"><div class="sec-label">📝 Notes for ${fmtDate(medDate)}</div><textarea class="box-textarea" style="min-height:60px;" placeholder="Any notes, side effects, or observations..." onchange="sv('med_note_${medDate}',this.value)">${ld("med_note_"+medDate)}</textarea></div>
+    }
+    const times=(med.times||["Morning"]);
+    return`<div class="med-card">
+      <div class="med-card-top">
+        <div class="med-icon">💊</div>
+        <div style="flex:1;min-width:0;">
+          <div class="med-name">${med.name}</div>
+          ${med.dose?`<div class="med-dose">${med.dose}</div>`:""}
+          ${med.freq?`<div style="font-size:10px;font-weight:700;color:var(--ink-light);margin-top:1px;">🔄 ${med.freq}</div>`:""}
+          <div class="med-dose">${times.join(" · ")}</div>
+          ${med.notes?`<div style="font-size:11px;font-weight:600;color:var(--ink-light);margin-top:3px;line-height:1.4;">📝 ${med.notes}</div>`:""}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">
+          <button onclick="window.editingMedId='${med.id}';renderMedicine()" style="width:28px;height:28px;border-radius:50%;background:var(--blush);border:none;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;">✏️</button>
+          <button class="med-del-btn" onclick="delMed('${med.id}')">✕</button>
+        </div>
+      </div>
+      <div class="med-times">
+        ${times.map(t=>{
+          const key=`${med.id}_${t}`;
+          const taken=ldo(`med_today`)[key];
+          return`<div class="med-time-chk ${taken?"taken":""}" onclick="toggleMedTakenToday('${med.id}','${t}')">${taken?"✓":""} ${t}</div>`;
+        }).join("")}
+      </div>
+    </div>`;
+  }
+
+  const todayTaken=ldo("med_today");
+  const allTaken=meds.length>0&&meds.every(m=>(m.times||["Morning"]).every(t=>todayTaken[`${m.id}_${t}`]));
+
+  document.getElementById("pageInner").innerHTML=`
+    <div class="section-heading">💊 My Medications</div>
+    <div class="section-sub">Master medication list · tap to log today's doses</div>
+    <div class="divider"></div>
+
+    ${allTaken&&meds.length?`<div style="background:#EDFFF5;border:1.5px solid #90C8A8;border-radius:12px;padding:10px;text-align:center;margin-bottom:12px;font-size:13px;font-weight:800;color:#3A8860;">✅ All medications taken today!</div>`:""}
+
+    <!-- Add new medication -->
+    <div style="background:white;border:1.5px solid #EEE0EC;border-radius:16px;padding:14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(180,120,160,.06);">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-light);margin-bottom:10px;">✦ Add Medication</div>
+      <input id="medName" class="med-input" placeholder="Medication name..." maxlength="60" style="margin-bottom:7px;"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px;">
+        <input id="medDose" class="med-input" placeholder="Dosage (e.g. 10mg)"/>
+        <input id="medFreq" class="med-input" placeholder="Frequency (e.g. Once daily)"/>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;" id="medTimeSel">
+        ${MED_TIMES.map(t=>`<label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--ink-mid);cursor:pointer;"><input type="checkbox" value="${t}" style="accent-color:#B4A8D8;width:14px;height:14px;"> ${t}</label>`).join("")}
+      </div>
+      <input id="medNotes" class="med-input" placeholder="Notes (purpose, doctor instructions...)" style="margin-bottom:9px;"/>
+      <button class="med-add-btn" style="width:100%;" onclick="addMed()">+ Add Medication</button>
+    </div>
+
+    ${meds.length===0
+      ?`<div style="text-align:center;padding:32px;color:var(--ink-light);font-size:13px;font-weight:700;">💊 No medications yet. Add one above!</div>`
+      :meds.map(m=>medCard(m)).join("")}
   `;
-  // Attach prevMedDay nextMedDay as globals for the onclick inline  
-  window.prevMedDay=prevMedDay;window.nextMedDay=nextMedDay;
 }
+
 function addMed(){
   const name=document.getElementById("medName")?.value?.trim();if(!name)return;
-  const dose=document.getElementById("medDose")?.value?.trim();
+  const dose=document.getElementById("medDose")?.value?.trim()||"";
+  const freq=document.getElementById("medFreq")?.value?.trim()||"";
+  const notes=document.getElementById("medNotes")?.value?.trim()||"";
   const checks=document.querySelectorAll("#medTimeSel input:checked");
   const times=checks.length?[...checks].map(c=>c.value):["Morning"];
   const meds=lda("medicines");
-  meds.push({id:Date.now().toString(),name,dose,times});
-  sva("medicines",meds);renderMedicine();
+  meds.push({id:Date.now().toString(),name,dose,freq,notes,times});
+  sva("medicines",meds);
+  window.editingMedId=null;
+  renderMedicine();
 }
-function delMed(id){sva("medicines",lda("medicines").filter(m=>m.id!==id));renderMedicine();}
-function toggleMedTaken(medId,time){
-  const dayKey=`med_${medDate}`;const data=ldo(dayKey);const key=`${medId}_${time}`;
-  data[key]=!data[key];svo(dayKey,data);renderMedicine();
+function delMed(id){
+  if(!confirm("Remove this medication?"))return;
+  sva("medicines",lda("medicines").filter(m=>m.id!==id));
+  renderMedicine();
+}
+function saveMedEdit(id){
+  const meds=lda("medicines");const m=meds.find(m=>m.id===id);if(!m)return;
+  m.name=document.getElementById("edit-med-name")?.value?.trim()||m.name;
+  m.dose=document.getElementById("edit-med-dose")?.value?.trim()||"";
+  m.freq=document.getElementById("edit-med-freq")?.value?.trim()||"";
+  m.notes=document.getElementById("edit-med-notes")?.value?.trim()||"";
+  const checks=document.querySelectorAll("#medTimeSel input:checked");
+  // fall back to existing times if no checkboxes found (edit mode uses different IDs)
+  const editChecks=document.querySelectorAll(".med-card input[type=checkbox]:checked");
+  if(editChecks.length)m.times=[...editChecks].map(c=>c.value);
+  sva("medicines",meds);
+  window.editingMedId=null;
+  renderMedicine();
+}
+function toggleMedTakenToday(medId,time){
+  const data=ldo("med_today");
+  const key=`${medId}_${time}`;
+  data[key]=!data[key];
+  svo("med_today",data);
+  renderMedicine();
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -3331,13 +3445,69 @@ function addCalEvent(mi){
   if(!title){titleEl?.focus();return;}
   const date=document.getElementById(`ev-date-${mi}`)?.value||`2026-${String(mi+1).padStart(2,"0")}-01`;
   const time=document.getElementById(`ev-time-${mi}`)?.value||"";
+  const recur=window[`selRecur_${mi}`]||"none";
   const all=calEvents();
-  all.push({id:ceUID(),title,date,time,color:selEvColorVal,created:Date.now()});
+
+  if(recur==="none"){
+    all.push({id:ceUID(),title,date,time,color:selEvColorVal,recur:"none",created:Date.now()});
+  } else {
+    // Generate recurring events across 2026
+    const instances=generateRecurring(title,date,time,selEvColorVal,recur);
+    instances.forEach(ev=>all.push(ev));
+  }
   saveCalEvents(all);
+  if(titleEl)titleEl.value="";
+  window[`selRecur_${mi}`]="none";
+  renderMonth(mi);
+}
+function generateRecurring(title,startDate,time,color,recur){
+  const events=[];
+  const baseId="rc"+Date.now().toString(36);
+  const start=new Date(startDate+"T12:00:00");
+  const yearEnd=new Date("2026-12-31T12:00:00");
+  let cur=new Date(start);
+  let count=0;
+  while(cur<=yearEnd&&count<500){
+    const dateStr=cur.toISOString().split("T")[0];
+    events.push({id:ceUID(),title,date:dateStr,time,color,recur,recurBaseId:baseId,created:Date.now()});
+    if(recur==="daily")cur.setDate(cur.getDate()+1);
+    else if(recur==="weekly")cur.setDate(cur.getDate()+7);
+    else if(recur==="monthly")cur.setMonth(cur.getMonth()+1);
+    else if(recur==="yearly")cur.setFullYear(cur.getFullYear()+1);
+    else break;
+    count++;
+  }
+  return events;
+}
+function saveCalEvent(id,mi){
+  const all=calEvents();
+  const e=all.find(e=>e.id===id);if(!e)return;
+  e.title=document.getElementById("ev-edit-title")?.value?.trim()||e.title;
+  e.date=document.getElementById("ev-edit-date")?.value||e.date;
+  e.time=document.getElementById("ev-edit-time")?.value||"";
+  e.color=window.editEvColor||e.color;
+  const newRecur=window.editEvRecur||e.recur||"none";
+  // If recur changed, ask if user wants to update all instances
+  if(newRecur!==e.recur&&e.recurBaseId){
+    if(confirm("Update all recurring instances of this event?")){
+      all.filter(ev=>ev.recurBaseId===e.recurBaseId).forEach(ev=>{ev.title=e.title;ev.time=e.time;ev.color=e.color;});
+    }
+  }
+  e.recur=newRecur;
+  saveCalEvents(all);
+  window.editingEvId=null;
   renderMonth(mi);
 }
 function deleteCalEvent(id){
-  saveCalEvents(calEvents().filter(e=>e.id!==id));
+  const all=calEvents();
+  const e=all.find(ev=>ev.id===id);
+  if(e?.recurBaseId&&all.filter(ev=>ev.recurBaseId===e.recurBaseId).length>1){
+    const choice=confirm("Delete all recurring instances? OK = all, Cancel = this one only");
+    if(choice){saveCalEvents(all.filter(ev=>ev.recurBaseId!==e.recurBaseId));}
+    else{saveCalEvents(all.filter(ev=>ev.id!==id));}
+  } else {
+    saveCalEvents(all.filter(ev=>ev.id!==id));
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -3532,10 +3702,25 @@ const SL_CAT_KEYS=SL_CATS.map(c=>c.key);
 const SL_CAT_BY_KEY=Object.fromEntries(SL_CATS.map(c=>[c.key,c]));
 
 // Multiple named lists
-function slLists(){try{return JSON.parse(ld("sl_lists",'[{"id":"main","name":"Groceries"}]'));}catch(e){return[{id:"main",name:"Groceries"}];}}
+function slLists(){try{return JSON.parse(ld("sl_lists",'[{"id":"main","name":"Groceries"},{"id":"workbag","name":"Work Bag 💼"}]'));}catch(e){return[{id:"main",name:"Groceries"},{id:"workbag",name:"Work Bag 💼"}];}}
 function saveSLLists(a){sv("sl_lists",JSON.stringify(a));}
 function slItems(listId){try{return JSON.parse(ld("sl_items_"+listId,"[]"));}catch(e){return[];}}
 function saveSLItems(listId,a){sv("sl_items_"+listId,JSON.stringify(a));}
+
+// Seed work bag defaults on first run
+(function seedWorkBag(){
+  if(ld("workbag_seeded"))return;
+  const mk=()=>"wb"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  const items=[
+    "Laptop","Laptop charger","Phone charger","Power bank",
+    "Notebook & pen","Work ID / badge","Wallet & cards","Keys",
+    "Earphones / AirPods","Water bottle","Snack","Hand sanitiser",
+    "Painkillers","Lip balm","Umbrella","Glasses / sunglasses",
+    "USB drive","Tissues","Face mask","Daily planner",
+  ].map(text=>({id:mk(),text,cat:text.includes("sanitiser")||text.includes("Painkiller")||text.includes("mask")?"health":"other",done:false,qty:"",note:""}));
+  saveSLItems("workbag",items);
+  sv("workbag_seeded","1");
+})();
 function slUID(){return "sl"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 
 let curSlList="main", slCatFilter="all";
@@ -3619,6 +3804,7 @@ function renderShopping(){
         <div style="display:flex;gap:6px;align-items:center;">
           <span style="font-size:11px;font-weight:900;color:var(--mint);">${pct}%</span>
           ${done>0?`<button onclick="clearDoneSlItems()" style="border:1.5px solid #EEE0EC;border-radius:20px;padding:3px 10px;background:white;font-size:10px;font-weight:800;color:var(--ink-light);cursor:pointer;font-family:'Nunito',sans-serif;">✓ Clear done</button>`:""}
+          <button onclick="resetAllSlItems('${curSlList}')" style="border:1.5px solid #F0C8D0;border-radius:20px;padding:3px 10px;background:var(--blush);font-size:10px;font-weight:800;color:var(--rose-dark);cursor:pointer;font-family:'Nunito',sans-serif;">↺ Reset all</button>
         </div>
       </div>
       <div style="height:7px;background:#F0E8EC;border-radius:4px;overflow:hidden;">
@@ -3699,6 +3885,14 @@ function deleteSlItem(id){
 }
 function clearDoneSlItems(){
   saveSLItems(curSlList,slItems(curSlList).filter(i=>!i.done));renderShopping();
+}
+function resetAllSlItems(listId){
+  const items=slItems(listId);
+  if(!items.length)return;
+  items.forEach(i=>i.done=false);
+  saveSLItems(listId,items);
+  renderShopping();
+  showToast("All items reset ↺");
 }
 function addSlList(){
   const name=prompt("List name (e.g. Costco, Pharmacy):");
@@ -4553,10 +4747,6 @@ function renderDirectory(){
   document.getElementById("accentStrip").style.background=ACCENT_STRIPS.directory;
 
   // ── helpers ──────────────────────────────────────────────────────────────────
-  function localDOY(d){
-    const start=new Date(d.getFullYear(),0,1);
-    return Math.floor((new Date(d.getFullYear(),d.getMonth(),d.getDate())-start)/(864e5))+1;
-  }
   const now=new Date();
   const todayStr=tds();
   const todos=lda("todos");
@@ -4564,10 +4754,10 @@ function renderDirectory(){
 
   // streak: consecutive days with a journal or prayer entry going backwards from today
   let streak=0;
-  const d=new Date(now);
+  const sd=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   for(let i=0;i<365;i++){
-    const k=localDOY(d);
-    if(ld("d_j_"+k)||ld("d_pr_"+k)){streak++;d.setDate(d.getDate()-1);}
+    const k=doyFromDate(sd);
+    if(ld("d_j_"+k)||ld("d_pr_"+k)){streak++;sd.setDate(sd.getDate()-1);}
     else break;
   }
 
@@ -4635,6 +4825,12 @@ function renderDirectory(){
       ["✅","To-Do","Tasks · priorities · recurring","todo"],
       ["📖","Bible","Daily reading · devotion","bible"],
       ["✝️","Bible Reflection","Scripture · notes · prayer","biblereflect"],
+      ["😊","Mood Tracker","Daily mood · monthly graph","mood"],
+    ])}
+
+    ${section("Faith","🙏",[
+      ["🙏","Prayer Wall","Requests · answered prayers","prayer"],
+      ["📖","Bible Reader","Full KJV · devotion","bible"],
     ])}
 
     ${section("Weekly","📅",[
@@ -4658,6 +4854,8 @@ function renderDirectory(){
     ${section("Ongoing","♾️",[
       ["📚","Reading","Bookshelf · goal · notes","reading"],
       ["💪","Exercise","Workouts · calendar","exercise"],
+      ["🥗","Food Log","Meals · calories · daily goal","foodlog"],
+      ["🎨","Hobby Projects","Track your creative pursuits","hobbies"],
       ["🛒","Shopping","Grocery lists","shopping"],
       ["🔗","Links","Saved websites","links"],
     ])}
@@ -4665,6 +4863,7 @@ function renderDirectory(){
     ${section("Work & People","💼",[
       ["💬","1:1 Meetings","Check-ins · action items","onemtg"],
       ["📋","Meeting Notes","Agenda · decisions","standalomtg"],
+      ["📱","Instagram","Content queue · calendar · ideas","social"],
     ])}
 
     ${section("Personal","🌿",[
@@ -4675,6 +4874,8 @@ function renderDirectory(){
     ])}
 
     ${section("More","📓",[
+      ["🔍","Search","Find anything across your journal","search"],
+      ["🏷️","Tags & Labels","Manage coloured tags","tags"],
       ["📅","Year Overview","Full year calendar","year"],
       ["🗂️","Kanban","Task board","kanban"],
       ["📓","My Pages","Custom notes","pages"],
@@ -5035,6 +5236,7 @@ function renderProfile(){
   const affirmation=ld("profile_affirmation");
   const avatar=ld("profile_avatar");
   const coverColor=ld("profile_cover")||"linear-gradient(135deg,#F0C8D0,#D8C0E8)";
+  const bgKey=ld("profile_bg")||"rose";
 
   const COVER_COLORS=[
     {label:"Rose",      val:"linear-gradient(135deg,#F0C8D0,#D8C0E8)"},
@@ -5045,6 +5247,21 @@ function renderProfile(){
     {label:"Peach",     val:"linear-gradient(135deg,#F0C8A8,#E8B898)"},
     {label:"Blush",     val:"linear-gradient(135deg,#F8D0D8,#F0B8C8)"},
     {label:"Sage",      val:"linear-gradient(135deg,#C8D8B8,#B8C8A8)"},
+  ];
+
+  const BG_THEMES=[
+    {key:"rose",    label:"🌸 Rose",      from:"#F5E8F0",mid:"#EEE0F8",to:"#E8EEF8",  accent:"#F0A8C0"},
+    {key:"lavender",label:"💜 Lavender",  from:"#EBE4FA",mid:"#E2D8FA",to:"#E4E4FA",  accent:"#C8B0F0"},
+    {key:"mint",    label:"🌿 Mint",      from:"#DDF5EC",mid:"#D4F5E6",to:"#D8EEF8",  accent:"#80C8A8"},
+    {key:"peach",   label:"🍑 Peach",     from:"#FAF0E0",mid:"#FAE8D5",to:"#FAF0E6",  accent:"#F0B888"},
+    {key:"sky",     label:"🩵 Sky",       from:"#DFF0FA",mid:"#D4E8FA",to:"#DDF0FA",  accent:"#90B8D8"},
+    {key:"gold",    label:"✨ Gold",      from:"#FAF4D8",mid:"#FAF0CC",to:"#FAF8D8",  accent:"#D4A840"},
+    {key:"blush",   label:"🌷 Blush",     from:"#FAE2EE",mid:"#FAE2F2",to:"#F8E0F4",  accent:"#F080B0"},
+    {key:"cream",   label:"🤍 Cream",     from:"#F5F0E8",mid:"#F2EDE4",to:"#EEEBE0",  accent:"#C8A888"},
+    {key:"lilac",   label:"🪻 Lilac",     from:"#F0E4FA",mid:"#EAD8FA",to:"#E4E4FA",  accent:"#B890D8"},
+    {key:"sage",    label:"🌱 Sage",      from:"#E4F0E4",mid:"#D8ECD8",to:"#E0F0E0",  accent:"#88B888"},
+    {key:"midnight",label:"🌙 Midnight",  from:"#1A1428",mid:"#1C1830",to:"#14101C",  accent:"#C8A8E8"},
+    {key:"forest",  label:"🌲 Forest",    from:"#141E14",mid:"#182018",to:"#101810",  accent:"#80C880"},
   ];
 
   const AFFIRMATIONS=[
@@ -5079,8 +5296,8 @@ function renderProfile(){
     <!-- Name -->
     <div style="background:white;border:1.5px solid #EEE0EC;border-radius:14px;padding:13px 14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(180,120,160,.06);">
       <div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-light);margin-bottom:7px;">👤 Your Name</div>
-      <input id="prof-name" value="${name}" placeholder="e.g. Ann" style="width:100%;border:1.5px solid #EEE0EC;border-radius:10px;padding:10px 13px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;color:var(--ink);background:#FAFAFA;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--rose)'" onblur="this.style.borderColor='#EEE0EC';sv('profile_name',this.value);renderDirectory&&renderDirectory()" placeholder="What shall we call you?"/>
-      <div style="font-size:11px;font-weight:600;color:var(--ink-light);margin-top:6px;">This appears in your home greeting 🌸</div>
+      <input id="prof-name" value="${name}" style="width:100%;border:1.5px solid #EEE0EC;border-radius:10px;padding:10px 13px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;color:var(--ink);background:#FAFAFA;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--rose)'" onblur="this.style.borderColor='#EEE0EC';sv('profile_name',this.value)" placeholder="What shall we call you?"/>
+      <div style="font-size:11px;font-weight:600;color:var(--ink-light);margin-top:6px;">Appears in your home greeting 🌸</div>
     </div>
 
     <!-- Affirmation -->
@@ -5093,9 +5310,27 @@ function renderProfile(){
       </div>
     </div>
 
+    <!-- 🎨 Background Theme -->
+    <div style="background:white;border:1.5px solid #EEE0EC;border-radius:14px;padding:13px 14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(180,120,160,.06);">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-light);margin-bottom:4px;">🎨 Planner Background</div>
+      <div style="font-size:11px;font-weight:600;color:var(--ink-light);margin-bottom:11px;">Changes the background colour of the whole planner</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+        ${BG_THEMES.map(bg=>`
+          <div onclick="applyBgTheme('${bg.key}')" style="border-radius:14px;overflow:hidden;cursor:pointer;border:3px solid ${bgKey===bg.key?"var(--rose)":"transparent"};transition:all .18s;box-shadow:${bgKey===bg.key?"0 0 0 1px var(--rose)":"none"};">
+            <div style="height:40px;background:linear-gradient(135deg,${bg.from},${bg.mid},${bg.to});position:relative;">
+              ${bgKey===bg.key?`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;">✓</div>`:""}
+            </div>
+            <div style="background:white;padding:5px 6px;text-align:center;">
+              <div style="font-size:11px;font-weight:800;color:var(--ink);">${bg.label}</div>
+            </div>
+          </div>`).join("")}
+      </div>
+    </div>
+
     <!-- Cover colour -->
     <div style="background:white;border:1.5px solid #EEE0EC;border-radius:14px;padding:13px 14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(180,120,160,.06);">
-      <div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-light);margin-bottom:10px;">🎨 Cover Colour</div>
+      <div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-light);margin-bottom:4px;">🌈 Avatar Frame Colour</div>
+      <div style="font-size:11px;font-weight:600;color:var(--ink-light);margin-bottom:10px;">The gradient behind your profile photo</div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
         ${COVER_COLORS.map(c=>`<div onclick="sv('profile_cover','${c.val}');renderProfile()" style="height:48px;border-radius:12px;background:${c.val};cursor:pointer;border:3px solid ${coverColor===c.val?"var(--ink)":"transparent"};transition:all .15s;display:flex;align-items:flex-end;justify-content:center;padding-bottom:5px;">
           <span style="font-size:9px;font-weight:900;color:rgba(255,255,255,.8);text-shadow:0 1px 3px rgba(0,0,0,.3);">${c.label}</span>
@@ -5112,6 +5347,45 @@ function loadProfileAvatar(event){
   reader.onload=e=>{sv("profile_avatar",e.target.result);renderProfile();};
   reader.readAsDataURL(file);
 }
+
+const BG_THEMES_MAP={
+  rose:    {from:"#F5E8F0",mid:"#EEE0F8",to:"#E8EEF8"},
+  lavender:{from:"#EBE4FA",mid:"#E2D8FA",to:"#E4E4FA"},
+  mint:    {from:"#DDF5EC",mid:"#D4F5E6",to:"#D8EEF8"},
+  peach:   {from:"#FAF0E0",mid:"#FAE8D5",to:"#FAF0E6"},
+  sky:     {from:"#DFF0FA",mid:"#D4E8FA",to:"#DDF0FA"},
+  gold:    {from:"#FAF4D8",mid:"#FAF0CC",to:"#FAF8D8"},
+  blush:   {from:"#FAE2EE",mid:"#FAE2F2",to:"#F8E0F4"},
+  cream:   {from:"#F5F0E8",mid:"#F2EDE4",to:"#EEEBE0"},
+  lilac:   {from:"#F0E4FA",mid:"#EAD8FA",to:"#E4E4FA"},
+  sage:    {from:"#E4F0E4",mid:"#D8ECD8",to:"#E0F0E0"},
+  midnight:{from:"#1A1428",mid:"#1C1830",to:"#14101C"},
+  forest:  {from:"#141E14",mid:"#182018",to:"#101810"},
+};
+function applyBgTheme(key){
+  sv("profile_bg",key);
+  const bg=BG_THEMES_MAP[key]||BG_THEMES_MAP.rose;
+  const isDark=key==="midnight"||key==="forest";
+  const grad=`linear-gradient(135deg,${bg.from} 0%,${bg.mid} 50%,${bg.to} 100%)`;
+  const el=document.getElementById("journalScreen");
+  if(el&&!JSON.parse(ld("darkMode","false")))el.style.background=grad;
+  // Update page-shell for dark themes
+  const ps=document.getElementById("pageShell");
+  if(ps&&isDark){ps.style.background=`linear-gradient(160deg,${bg.from},${bg.mid},${bg.to})`;}
+  else if(ps){ps.style.background="";}
+  renderProfile();
+}
+// Apply saved background on startup
+(function(){
+  const key=ld("profile_bg","rose");
+  if(key&&key!=="rose"&&!JSON.parse(ld("darkMode","false"))){
+    const bg=BG_THEMES_MAP[key];
+    if(bg){
+      const el=document.getElementById("journalScreen");
+      if(el)el.style.background=`linear-gradient(135deg,${bg.from} 0%,${bg.mid} 50%,${bg.to} 100%)`;
+    }
+  }
+})();
 function showToast(msg){
   const t=document.createElement("div");
   t.style.cssText="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--rose),var(--rose-dark));color:white;border-radius:24px;padding:10px 24px;font-size:13px;font-weight:800;box-shadow:0 4px 16px rgba(200,100,140,.4);z-index:9999;font-family:'Nunito',sans-serif;white-space:nowrap;";
@@ -6074,6 +6348,1662 @@ function deleteBR(id){
   saveBibleReflections(bibleReflections().filter(e=>e.id!==id));
   curBREntry=null;
   renderBibleReflect();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ── SOCIAL MEDIA POSTING SCHEDULE ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+const IG_POST_TYPES=[
+  {key:"reel",     label:"🎬 Reel",      color:"#E1306C"},
+  {key:"carousel", label:"🖼️ Carousel",  color:"#C13584"},
+  {key:"photo",    label:"📸 Photo",     color:"#833AB4"},
+  {key:"story",    label:"⭕ Story",     color:"#F77737"},
+  {key:"live",     label:"🔴 Live",      color:"#FCAF45"},
+];
+const IG_STATUS=[
+  {key:"idea",      label:"💡 Idea",      bg:"#FFF8DC",col:"#C8A020"},
+  {key:"draft",     label:"✍️ Draft",    bg:"#F0EEFF",col:"#7060A8"},
+  {key:"ready",     label:"✅ Ready",    bg:"#EDFFF8",col:"#3A8860"},
+  {key:"scheduled", label:"📅 Scheduled",bg:"#EEF4FF",col:"#3870A8"},
+  {key:"posted",    label:"🌸 Posted",   bg:"#FFF0F6",col:"var(--rose-dark)"},
+];
+const IG_CONTENT_TYPES=["Product demo","Behind the scenes","Tutorial / How-to","Testimonial","Personal / Faith","Motivation / Quote","Announcement","Repost / Collab","Question / Poll","Seasonal / Trending"];
+
+function socialPosts(){return lda("social_posts_v1");}
+function saveSocialPosts(a){sva("social_posts_v1",a);}
+function spUID(){return "sp"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function socialIdeas(){return lda("social_ideas_v1");}
+function saveSocialIdeas(a){sva("social_ideas_v1",a);}
+
+let socialTab="queue";    // queue | calendar | schedule | ideas
+let editingPostId=null;
+let socialCalMonth=new Date().getMonth(); // 0-11
+
+function renderSocial(){
+  document.getElementById("accentStrip").style.background=ACCENT_STRIPS.social;
+
+  const tabs=[
+    {key:"queue",    label:"📋 Queue"},
+    {key:"calendar", label:"📅 Calendar"},
+    {key:"schedule", label:"⏰ Schedule"},
+    {key:"ideas",    label:"💡 Ideas"},
+  ];
+  const tabBar=`<div style="display:flex;gap:6px;background:white;border:1.5px solid #EEE0EC;border-radius:14px;padding:7px;margin-bottom:14px;box-shadow:0 2px 8px rgba(220,100,160,.07);">
+    ${tabs.map(t=>`<button onclick="socialTab='${t.key}';editingPostId=null;renderSocial()"
+      style="flex:1;border:none;border-radius:9px;padding:8px 4px;font-size:11px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .15s;${socialTab===t.key?"background:linear-gradient(135deg,#F0A8C0,#D870A8);color:white;box-shadow:0 2px 8px rgba(220,100,160,.3);":"background:transparent;color:var(--ink-light);"}">${t.label}</button>`).join("")}
+  </div>`;
+
+  if(socialTab==="queue")    renderSocialQueue(tabBar);
+  else if(socialTab==="calendar") renderSocialCalendar(tabBar);
+  else if(socialTab==="schedule") renderSocialSchedule(tabBar);
+  else if(socialTab==="ideas")    renderSocialIdeas(tabBar);
+}
+
+// ── QUEUE ─────────────────────────────────────────────────────────────────────
+function renderSocialQueue(tabBar){
+  const posts=socialPosts().sort((a,b)=>a.postDate?.localeCompare(b.postDate||"")||0);
+
+  function statusBadge(s){
+    const st=IG_STATUS.find(x=>x.key===s)||IG_STATUS[0];
+    return`<span style="background:${st.bg};color:${st.col};border-radius:20px;padding:2px 9px;font-size:10px;font-weight:900;">${st.label}</span>`;
+  }
+  function typeBadge(t){
+    const tp=IG_POST_TYPES.find(x=>x.key===t)||IG_POST_TYPES[0];
+    return`<span style="background:${tp.color}22;color:${tp.color};border-radius:20px;padding:2px 9px;font-size:10px;font-weight:900;">${tp.label}</span>`;
+  }
+
+  function postCard(p){
+    if(editingPostId===p.id) return editPostForm(p);
+    const dt=p.postDate?new Date(p.postDate+"T12:00:00").toLocaleDateString("en",{month:"short",day:"numeric",year:"numeric"}):"No date";
+    return`<div style="background:white;border:1.5px solid #EEE0EC;border-radius:16px;padding:13px 14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(220,100,160,.05);transition:all .18s;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">${typeBadge(p.type)} ${statusBadge(p.status)}</div>
+        <div style="display:flex;gap:4px;flex-shrink:0;">
+          <button onclick="editingPostId='${p.id}';renderSocial()" style="width:28px;height:28px;border-radius:50%;background:var(--blush);border:none;cursor:pointer;font-size:13px;">✏️</button>
+          <button onclick="deletePost('${p.id}')" style="width:28px;height:28px;border-radius:50%;background:#FFF0F0;border:none;cursor:pointer;font-size:13px;">🗑️</button>
+        </div>
+      </div>
+      <div style="font-size:13px;font-weight:800;color:var(--ink);margin-bottom:4px;line-height:1.4;">${p.caption?p.caption.slice(0,80)+(p.caption.length>80?"…":""):"(No caption yet)"}</div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:${p.hashtags?"6px":"0"};">
+        <span style="font-size:11px;font-weight:700;color:var(--ink-light);">📅 ${dt}</span>
+        ${p.time?`<span style="font-size:11px;font-weight:700;color:var(--ink-light);">⏰ ${p.time}</span>`:""}
+        ${p.contentType?`<span style="font-size:11px;font-weight:700;color:var(--rose-dark);">✦ ${p.contentType}</span>`:""}
+      </div>
+      ${p.hashtags?`<div style="font-size:10px;font-weight:700;color:#C13584;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.hashtags}</div>`:""}
+      ${p.status!=="posted"?`<button onclick="markPosted('${p.id}')" style="width:100%;margin-top:9px;background:linear-gradient(135deg,#F0A8C0,#D870A8);border:none;border-radius:10px;padding:8px;font-size:11px;font-weight:900;color:white;cursor:pointer;font-family:'Nunito',sans-serif;">🌸 Mark as Posted</button>`:""}
+    </div>`;
+  }
+
+  function editPostForm(p){
+    const isNew=!p.id;
+    return`<div style="background:linear-gradient(135deg,#FFF0F6,#F8F0FF);border:1.5px solid #F0A0C0;border-radius:18px;padding:14px;margin-bottom:12px;">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--rose-dark);margin-bottom:11px;">${isNew?"✦ New Post":"✏️ Edit Post"}</div>
+
+      <!-- Type -->
+      <div style="font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:5px;">Post Type</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;" id="sp-type-row">
+        ${IG_POST_TYPES.map(t=>`<div onclick="window._spType='${t.key}';document.querySelectorAll('#sp-type-row div').forEach(d=>{d.style.background=d.dataset.t==='${t.key}'?'${t.color}':'transparent';d.style.color=d.dataset.t==='${t.key}'?'white':'var(--ink-light)';d.style.borderColor=d.dataset.t==='${t.key}'?'${t.color}':'#EEE0EC';});" data-t="${t.key}" style="font-size:11px;font-weight:800;padding:5px 10px;border-radius:20px;cursor:pointer;border:1.5px solid ${(p.type||"reel")===t.key?t.color:"#EEE0EC"};background:${(p.type||"reel")===t.key?t.color:"transparent"};color:${(p.type||"reel")===t.key?"white":"var(--ink-light)"};transition:all .15s;">${t.label}</div>`).join("")}
+      </div>
+
+      <!-- Caption -->
+      <div style="font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:5px;">Caption / Script</div>
+      <textarea id="sp-caption" style="width:100%;border:1.5px solid #EEE0EC;border-radius:10px;padding:9px 11px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;color:var(--ink);background:white;outline:none;resize:none;min-height:80px;line-height:1.65;margin-bottom:9px;" placeholder="Write your caption here..." onkeydown="event.stopPropagation()">${p.caption||""}</textarea>
+
+      <!-- Hashtags -->
+      <textarea id="sp-hashtags" style="width:100%;border:1.5px solid #EEE0EC;border-radius:10px;padding:9px 11px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:600;color:#C13584;background:white;outline:none;resize:none;min-height:50px;line-height:1.6;margin-bottom:9px;" placeholder="#bloomjournal #digitalplanner #planwithme..." onkeydown="event.stopPropagation()">${p.hashtags||""}</textarea>
+
+      <!-- Content type + date + time -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px;">
+        <div>
+          <div style="font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-light);margin-bottom:4px;">Content Type</div>
+          <select id="sp-ctype" style="width:100%;border:1.5px solid #EEE0EC;border-radius:9px;padding:7px 9px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:white;outline:none;">
+            <option value="">— Choose —</option>
+            ${IG_CONTENT_TYPES.map(ct=>`<option value="${ct}" ${p.contentType===ct?"selected":""}>${ct}</option>`).join("")}
+          </select>
+        </div>
+        <div>
+          <div style="font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-light);margin-bottom:4px;">Status</div>
+          <select id="sp-status" style="width:100%;border:1.5px solid #EEE0EC;border-radius:9px;padding:7px 9px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:white;outline:none;">
+            ${IG_STATUS.map(s=>`<option value="${s.key}" ${(p.status||"idea")===s.key?"selected":""}>${s.label}</option>`).join("")}
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:11px;">
+        <div>
+          <div style="font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-light);margin-bottom:4px;">Post Date</div>
+          <input id="sp-date" type="date" value="${p.postDate||tds()}" style="width:100%;border:1.5px solid #EEE0EC;border-radius:9px;padding:7px 9px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:white;outline:none;"/>
+        </div>
+        <div>
+          <div style="font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-light);margin-bottom:4px;">Best Time</div>
+          <input id="sp-time" type="time" value="${p.time||"09:00"}" style="width:100%;border:1.5px solid #EEE0EC;border-radius:9px;padding:7px 9px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:white;outline:none;"/>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="savePost('${p.id||""}')" style="flex:2;background:linear-gradient(135deg,#F0A8C0,#D870A8);border:none;border-radius:10px;padding:11px;font-size:13px;font-weight:900;color:white;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 3px 10px rgba(220,100,160,.3);">💾 Save</button>
+        <button onclick="editingPostId=null;renderSocial()" style="flex:1;background:white;border:1.5px solid #EEE0EC;border-radius:10px;padding:10px;font-size:12px;font-weight:800;color:var(--ink-light);cursor:pointer;font-family:'Nunito',sans-serif;">Cancel</button>
+      </div>
+    </div>`;
+  }
+
+  // Filter by status
+  const filters=["all",...IG_STATUS.map(s=>s.key)];
+  const curFilter=window._spFilter||"all";
+  const filtered=posts.filter(p=>curFilter==="all"||p.status===curFilter);
+  const counts={};IG_STATUS.forEach(s=>{counts[s.key]=posts.filter(p=>p.status===s.key).length;});
+
+  document.getElementById("pageInner").innerHTML=`
+    <div class="section-heading">📱 Instagram</div>
+    <div class="section-sub">Plan · create · schedule · post 🌸</div>
+    <div class="divider"></div>
+    ${tabBar}
+
+    <!-- Quick stats -->
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:14px;">
+      ${IG_STATUS.map(s=>`<div style="background:${s.bg};border-radius:10px;padding:8px 4px;text-align:center;">
+        <div style="font-size:16px;font-weight:900;color:${s.col};">${counts[s.key]||0}</div>
+        <div style="font-size:8px;font-weight:800;color:${s.col};margin-top:2px;line-height:1.2;">${s.label.split(" ").slice(1).join(" ")}</div>
+      </div>`).join("")}
+    </div>
+
+    <!-- New post button -->
+    ${editingPostId==="new"?"":`<button onclick="editingPostId='new';renderSocial()" style="width:100%;background:linear-gradient(135deg,#F0A8C0,#D870A8);border:none;border-radius:14px;padding:12px;font-size:13px;font-weight:900;color:white;cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:12px;box-shadow:0 3px 12px rgba(220,100,160,.3);">✦ Add New Post</button>`}
+
+    <!-- New post form -->
+    ${editingPostId==="new"?editPostForm({}):""}
+
+    <!-- Filter chips -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+      ${["all",...IG_STATUS.map(s=>s.key)].map(f=>{
+        const st=IG_STATUS.find(s=>s.key===f);
+        const lbl=f==="all"?"✦ All":st.label;
+        const active=curFilter===f;
+        return`<div onclick="window._spFilter='${f}';renderSocial()" style="font-size:10px;font-weight:800;padding:5px 11px;border-radius:20px;cursor:pointer;background:${active?"linear-gradient(135deg,#F0A8C0,#D870A8)":st?st.bg:"#F8F0F8"};color:${active?"white":st?st.col:"var(--ink-light)"};transition:all .15s;">${lbl}</div>`;
+      }).join("")}
+    </div>
+
+    ${filtered.length===0?`<div style="text-align:center;padding:32px;color:var(--ink-light);font-size:13px;font-weight:700;">No posts here yet 🌸</div>`:""}
+    ${filtered.map(p=>postCard(p)).join("")}
+  `;
+
+  // Init type selector default
+  if(editingPostId){
+    window._spType=socialPosts().find(p=>p.id===editingPostId)?.type||"reel";
+  }
+}
+
+// ── CALENDAR VIEW ─────────────────────────────────────────────────────────────
+function renderSocialCalendar(tabBar){
+  const mi=socialCalMonth;
+  const m=MONTHS[mi];
+  const posts=socialPosts().filter(p=>p.postDate&&p.postDate.startsWith(`2026-${String(mi+1).padStart(2,"0")}`));
+
+  // Group by day
+  const byDay={};
+  posts.forEach(p=>{const d=parseInt(p.postDate.split("-")[2]);(byDay[d]=byDay[d]||[]).push(p);});
+
+  // Build 7-col calendar
+  const DAY_HDRS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  let calHtml=`<div style="background:white;border:1.5px solid #F0D0E0;border-radius:16px;overflow:hidden;margin-bottom:14px;box-shadow:0 2px 10px rgba(220,100,160,.08);">`;
+  calHtml+=`<div style="display:grid;grid-template-columns:repeat(7,1fr);border-bottom:2px solid #F0D0E0;">`;
+  DAY_HDRS.forEach(d=>{calHtml+=`<div style="padding:7px 2px;text-align:center;font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-dark);background:#FFF0F6;">${d}</div>`;});
+  calHtml+=`</div>`;
+
+  const totalRows=Math.ceil((m.start+m.days)/7);
+  for(let row=0;row<totalRows;row++){
+    calHtml+=`<div style="display:grid;grid-template-columns:repeat(7,1fr);">`;
+    for(let col=0;col<7;col++){
+      const idx=row*7+col;
+      const dayNum=idx-m.start+1;
+      const valid=dayNum>=1&&dayNum<=m.days;
+      const dayPosts=valid?(byDay[dayNum]||[]):[];
+      const isToday=valid&&new Date(2026,mi,dayNum).toDateString()===new Date().toDateString();
+      const borderR=col<6?"border-right:1px solid #F8E8F0;":"";
+      const borderB=row<totalRows-1?"border-bottom:1px solid #F8E8F0;":"";
+      calHtml+=`<div style="min-height:60px;padding:4px;${borderR}${borderB}background:${valid?"white":"#FDF8FD"};position:relative;min-width:0;overflow:hidden;">`;
+      if(valid){
+        calHtml+=`<div style="width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:${isToday?"900":"700"};color:${isToday?"white":"var(--ink-light)"};background:${isToday?"linear-gradient(135deg,#F0A8C0,#D870A8)":"transparent"};margin-bottom:2px;">${dayNum}</div>`;
+        dayPosts.slice(0,2).forEach(p=>{
+          const tp=IG_POST_TYPES.find(t=>t.key===p.type)||IG_POST_TYPES[0];
+          const title=(p.caption||"Post").slice(0,8)+"…";
+          calHtml+=`<div style="width:100%;background:${tp.color}22;border-left:2.5px solid ${tp.color};border-radius:0 4px 4px 0;padding:1px 3px;margin-bottom:1px;font-size:8px;font-weight:800;color:${tp.color};overflow:hidden;white-space:nowrap;text-overflow:clip;max-width:100%;box-sizing:border-box;">${title}</div>`;
+        });
+        if(dayPosts.length>2)calHtml+=`<div style="font-size:8px;font-weight:800;color:var(--ink-light);">+${dayPosts.length-2}</div>`;
+      }
+      calHtml+=`</div>`;
+    }
+    calHtml+=`</div>`;
+  }
+  calHtml+=`</div>`;
+
+  const scheduled=posts.filter(p=>p.status==="scheduled"||p.status==="ready").length;
+  const posted=posts.filter(p=>p.status==="posted").length;
+
+  document.getElementById("pageInner").innerHTML=`
+    <div class="section-heading">📅 Content Calendar</div>
+    <div class="section-sub">Your Instagram posting plan 🌸</div>
+    <div class="divider"></div>
+    ${tabBar}
+    <div class="nav-row" style="margin-bottom:12px;">
+      ${mi>0?`<button class="nav-btn" onclick="socialCalMonth=${mi-1};renderSocial()">◀ ${MONTHS[mi-1].short}</button>`:`<div></div>`}
+      <div style="font-size:13px;font-weight:900;color:var(--rose-dark);">${m.emoji} ${m.name} 2026</div>
+      ${mi<11?`<button class="nav-btn" onclick="socialCalMonth=${mi+1};renderSocial()">${MONTHS[mi+1].short} ▶</button>`:`<div></div>`}
+    </div>
+    <!-- Month stats -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+      <div style="background:white;border:1.5px solid #EEE0EC;border-radius:12px;padding:10px;text-align:center;"><div style="font-size:22px;font-weight:900;color:var(--rose-dark);">${posts.length}</div><div style="font-size:9px;font-weight:800;color:var(--ink-light);text-transform:uppercase;letter-spacing:.1em;">Total</div></div>
+      <div style="background:#EDFFF8;border:1.5px solid #90C8A8;border-radius:12px;padding:10px;text-align:center;"><div style="font-size:22px;font-weight:900;color:#3A8860;">${posted}</div><div style="font-size:9px;font-weight:800;color:#3A8860;text-transform:uppercase;letter-spacing:.1em;">Posted</div></div>
+      <div style="background:#EEF4FF;border:1.5px solid #90B8D8;border-radius:12px;padding:10px;text-align:center;"><div style="font-size:22px;font-weight:900;color:#3870A8;">${scheduled}</div><div style="font-size:9px;font-weight:800;color:#3870A8;text-transform:uppercase;letter-spacing:.1em;">Planned</div></div>
+    </div>
+    ${calHtml}
+    <div style="font-size:11px;font-weight:700;color:var(--ink-light);text-align:center;">Tap ✦ Add New Post in Queue tab to add posts that appear here 🌸</div>
+  `;
+}
+
+// ── SCHEDULE (Best Times) ─────────────────────────────────────────────────────
+function renderSocialSchedule(tabBar){
+  const sched=JSON.parse(ld("ig_schedule","null"))||{
+    mon:["9:00 AM","6:00 PM"], tue:["9:00 AM","12:00 PM"], wed:["9:00 AM","6:00 PM"],
+    thu:["9:00 AM","6:00 PM"], fri:["9:00 AM","12:00 PM"], sat:["10:00 AM"],   sun:[]
+  };
+  const days=["mon","tue","wed","thu","fri","sat","sun"];
+  const dayLabels={mon:"Monday",tue:"Tuesday",wed:"Wednesday",thu:"Thursday",fri:"Friday",sat:"Saturday",sun:"Sunday"};
+  const goal=ld("ig_weekly_goal","3");
+  const theme=ld("ig_monthly_theme","");
+  const hook=ld("ig_hook","");
+
+  document.getElementById("pageInner").innerHTML=`
+    <div class="section-heading">⏰ Posting Schedule</div>
+    <div class="section-sub">Your Instagram rhythm 🌸</div>
+    <div class="divider"></div>
+    ${tabBar}
+
+    <!-- Monthly focus -->
+    <div style="background:linear-gradient(135deg,#FFF0F6,#F8F0FF);border:1.5px solid #F0C8D8;border-radius:16px;padding:14px;margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--rose-dark);margin-bottom:10px;">🌸 This Month's Focus</div>
+      <div style="margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--ink-light);margin-bottom:4px;">Monthly Theme</div>
+        <input id="ig-theme" value="${theme}" placeholder="e.g. Launch month · Summer planning · Faith & productivity" style="width:100%;border:1.5px solid #EEE0EC;border-radius:10px;padding:8px 11px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:white;outline:none;" oninput="sv('ig_monthly_theme',this.value)"/>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--ink-light);margin-bottom:4px;">Weekly Post Goal</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input id="ig-goal" type="number" min="1" max="21" value="${goal}" style="width:60px;border:1.5px solid #EEE0EC;border-radius:10px;padding:8px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;color:var(--rose-dark);background:white;outline:none;text-align:center;" oninput="sv('ig_weekly_goal',this.value)"/>
+          <div style="font-size:13px;font-weight:700;color:var(--ink-mid);">posts per week</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--ink-light);margin-bottom:4px;">Current Hook / CTA</div>
+        <input id="ig-hook" value="${hook}" placeholder="e.g. 'Download link in bio' · 'Comment BLOOM for the link'" style="width:100%;border:1.5px solid #EEE0EC;border-radius:10px;padding:8px 11px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:white;outline:none;" oninput="sv('ig_hook',this.value)"/>
+      </div>
+    </div>
+
+    <!-- Best posting times -->
+    <div style="background:white;border:1.5px solid #EEE0EC;border-radius:16px;padding:13px 14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(220,100,160,.06);">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--rose-dark);margin-bottom:11px;">📅 Best Posting Times</div>
+      ${days.map(day=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(220,180,200,.12);">
+        <div style="width:48px;font-size:12px;font-weight:900;color:var(--ink);">${dayLabels[day].slice(0,3)}</div>
+        <div style="flex:1;font-size:12px;font-weight:700;color:${sched[day]?.length?"var(--rose-dark)":"var(--ink-light)"};">
+          ${sched[day]?.length?sched[day].join(" · "):"Rest day"}
+        </div>
+        ${sched[day]?.length?`<span style="background:#FFF0F6;color:var(--rose-dark);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:800;">${sched[day].length} post${sched[day].length>1?"s":""}</span>`:`<span style="font-size:12px;">😴</span>`}
+      </div>`).join("")}
+    </div>
+
+    <!-- Instagram best practice tips -->
+    <div style="background:linear-gradient(135deg,#FFF8DC,#FFF4D8);border:1.5px solid #F0D878;border-radius:14px;padding:13px 14px;">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#8A6010;margin-bottom:9px;">💡 Instagram Tips for Bloom Journal</div>
+      ${[
+        ["🎬","Reels get 2× the reach","Post at least 3–4 Reels per week. Show the journal in action."],
+        ["📸","Carousel saves = algorithm boost","Carousel posts save well — use for 'how to use' or tips."],
+        ["⏰","Best times for your niche","6–8am · 11am–1pm · 7–9pm EST — post when planners are planning!"],
+        ["#️⃣","30 hashtags max","Mix large (#digitalplanner 1M+), medium (#planwithme 500K), niche (#bloomjournal)"],
+        ["🌸","Story every day","Even on non-feed days, post a Story to stay in followers' feeds."],
+        ["💬","Reply within 1 hour","Comments replied to quickly get shown to more people — set a reminder!"],
+      ].map(([emoji,title,tip])=>`<div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid rgba(220,180,60,.1);">
+        <span style="font-size:18px;flex-shrink:0;">${emoji}</span>
+        <div><div style="font-size:12px;font-weight:900;color:#6A4810;">${title}</div><div style="font-size:11px;font-weight:600;color:#8A6820;line-height:1.5;">${tip}</div></div>
+      </div>`).join("")}
+    </div>
+  `;
+}
+
+// ── IDEAS BANK ────────────────────────────────────────────────────────────────
+function renderSocialIdeas(tabBar){
+  const ideas=socialIdeas();
+
+  function ideaCard(idea,i){
+    return`<div style="background:white;border:1.5px solid #EEE0EC;border-left:4px solid #E1306C;border-radius:12px;padding:11px 13px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;">
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:800;color:var(--ink);line-height:1.4;">${idea.text}</div>
+        ${idea.type?`<div style="font-size:10px;font-weight:800;color:#C13584;margin-top:3px;">✦ ${idea.type}</div>`:""}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">
+        <button onclick="convertIdeaToPost(${i})" style="padding:4px 8px;border-radius:8px;background:linear-gradient(135deg,#F0A8C0,#D870A8);border:none;color:white;font-size:10px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;">→ Queue</button>
+        <button onclick="deleteIdea(${i})" style="padding:4px 8px;border-radius:8px;background:#FFF0F0;border:none;color:#D08080;font-size:10px;font-weight:800;cursor:pointer;">Delete</button>
+      </div>
+    </div>`;
+  }
+
+  document.getElementById("pageInner").innerHTML=`
+    <div class="section-heading">💡 Content Ideas</div>
+    <div class="section-sub">Capture ideas before they disappear 🌸</div>
+    <div class="divider"></div>
+    ${tabBar}
+
+    <!-- Add idea -->
+    <div style="background:white;border:1.5px solid #EEE0EC;border-radius:16px;padding:13px 14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(220,100,160,.06);">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--rose-dark);margin-bottom:8px;">✦ Capture an Idea</div>
+      <textarea id="idea-text" style="width:100%;border:1.5px solid #EEE0EC;border-radius:10px;padding:9px 11px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--ink);background:#FAFAFA;outline:none;resize:none;min-height:65px;margin-bottom:8px;" placeholder="What's the idea? Be specific — hook, format, topic..." onkeydown="event.stopPropagation()"></textarea>
+      <div style="display:flex;gap:8px;">
+        <select id="idea-type" style="flex:1;border:1.5px solid #EEE0EC;border-radius:10px;padding:8px 10px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:#FAFAFA;outline:none;">
+          <option value="">Content type...</option>
+          ${IG_CONTENT_TYPES.map(ct=>`<option value="${ct}">${ct}</option>`).join("")}
+        </select>
+        <button onclick="addIdea()" style="flex:1;background:linear-gradient(135deg,#F0A8C0,#D870A8);border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:900;color:white;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 3px 10px rgba(220,100,160,.25);">+ Save Idea</button>
+      </div>
+    </div>
+
+    <!-- Inspiration starters -->
+    <div style="background:linear-gradient(135deg,#FFF0F6,#F8F0FF);border:1.5px solid #F0C8D8;border-radius:14px;padding:12px 14px;margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--rose-dark);margin-bottom:9px;">🌸 Bloom Journal Content Ideas</div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        ${[
+          "Show my morning routine using Bloom Journal",
+          "How I track my Bible reading in 2026",
+          "5 pages inside Bloom Journal you need to see",
+          "My monthly reset routine (walk through the page)",
+          "How I plan my week with the weekly pre-planning page",
+          "Bloom Journal vs other planners — honest comparison",
+          "Pack with me for a trip (show travel packing list)",
+          "Day in my life as a Bloom Journal user",
+          "How I track habits in my offline journal",
+          "Before vs after: my planning system transformation",
+        ].map(idea=>`<div onclick="document.getElementById('idea-text').value='${idea.replace(/'/g,"\\'")}'" style="font-size:12px;font-weight:700;color:var(--rose-dark);padding:7px 10px;background:white;border-radius:9px;cursor:pointer;border:1px solid #F0C8D8;transition:all .15s;line-height:1.4;" onmouseover="this.style.background='#FFF8FC'" onmouseout="this.style.background='white'">✦ ${idea}</div>`).join("")}
+      </div>
+    </div>
+
+    ${ideas.length===0?`<div style="text-align:center;padding:24px;color:var(--ink-light);font-size:13px;font-weight:700;">No ideas saved yet — add one above or tap a starter! 🌸</div>`:""}
+    ${ideas.map((idea,i)=>ideaCard(idea,i)).join("")}
+  `;
+}
+
+// ── Social helpers ─────────────────────────────────────────────────────────────
+function savePost(id){
+  const isNew=!id||id==="";
+  const all=isNew?socialPosts():socialPosts().filter(p=>p.id!==id);
+  const post={
+    id:isNew?spUID():id,
+    type:window._spType||"reel",
+    caption:document.getElementById("sp-caption")?.value||"",
+    hashtags:document.getElementById("sp-hashtags")?.value||"",
+    contentType:document.getElementById("sp-ctype")?.value||"",
+    status:document.getElementById("sp-status")?.value||"idea",
+    postDate:document.getElementById("sp-date")?.value||tds(),
+    time:document.getElementById("sp-time")?.value||"",
+  };
+  all.push(post);
+  saveSocialPosts(all);
+  editingPostId=null;
+  showToast("Post saved 🌸");
+  renderSocial();
+}
+function deletePost(id){
+  if(!confirm("Delete this post?"))return;
+  saveSocialPosts(socialPosts().filter(p=>p.id!==id));
+  renderSocial();
+}
+function markPosted(id){
+  const all=socialPosts();const p=all.find(p=>p.id===id);if(p)p.status="posted";
+  saveSocialPosts(all);renderSocial();
+}
+function addIdea(){
+  const text=document.getElementById("idea-text")?.value?.trim();if(!text)return;
+  const type=document.getElementById("idea-type")?.value||"";
+  const all=socialIdeas();
+  all.unshift({text,type,created:Date.now()});
+  saveSocialIdeas(all);
+  document.getElementById("idea-text").value="";
+  renderSocial();
+}
+function deleteIdea(i){
+  const all=socialIdeas();all.splice(i,1);saveSocialIdeas(all);renderSocial();
+}
+function convertIdeaToPost(i){
+  const idea=socialIdeas()[i];
+  if(!idea)return;
+  const all=socialPosts();
+  all.unshift({id:spUID(),type:"reel",caption:idea.text,hashtags:"",contentType:idea.type||"",status:"idea",postDate:tds(),time:"09:00"});
+  saveSocialPosts(all);
+  const ideas=socialIdeas();ideas.splice(i,1);saveSocialIdeas(ideas);
+  socialTab="queue";
+  showToast("Added to queue 🌸");
+  renderSocial();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ── DARK MODE ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+function applyDarkMode(on){
+  const r=document.documentElement;
+  if(on){
+    r.style.setProperty("--paper","#1E1628");
+    r.style.setProperty("--ink","#F0E8F8");
+    r.style.setProperty("--ink-mid","#C8B8D8");
+    r.style.setProperty("--ink-light","#9880A8");
+    r.style.setProperty("--blush","#3A2840");
+    r.style.setProperty("--rose","#D870A8");
+    r.style.setProperty("--rose-dark","#F0A8C0");
+    r.style.setProperty("--rose-deep","#F8C8D8");
+    r.style.setProperty("--lavender","#B8A8E0");
+    r.style.setProperty("--mint","#80C8A8");
+    r.style.setProperty("--gold","#D4B840");
+    document.getElementById("journalScreen").style.background="linear-gradient(160deg,#120D18 0%,#1A1224 50%,#0E0C18 100%)";
+    // dark topbar
+    const tb=document.querySelector(".j-topbar");
+    if(tb)tb.style.background="rgba(30,22,40,.92)";
+    const ps=document.getElementById("pageShell");
+    if(ps)ps.style.background="linear-gradient(160deg,#1E1628,#1A1430,#1C1228)";
+    document.getElementById("darkToggle").textContent="☀️";
+  } else {
+    r.style.removeProperty("--paper");
+    r.style.removeProperty("--ink");
+    r.style.removeProperty("--ink-mid");
+    r.style.removeProperty("--ink-light");
+    r.style.removeProperty("--blush");
+    r.style.removeProperty("--rose");
+    r.style.removeProperty("--rose-dark");
+    r.style.removeProperty("--rose-deep");
+    r.style.removeProperty("--lavender");
+    r.style.removeProperty("--mint");
+    r.style.removeProperty("--gold");
+    document.getElementById("journalScreen").style.background="linear-gradient(135deg,#FFF5FB 0%,#F8F0FF 50%,#F0F8FF 100%)";
+    const tb=document.querySelector(".j-topbar");
+    if(tb)tb.style.background="";
+    const ps=document.getElementById("pageShell");
+    if(ps)ps.style.background="";
+    document.getElementById("darkToggle").textContent="🌙";
+  }
+}
+function toggleDarkMode(){
+  const on=!JSON.parse(ld("darkMode","false"));
+  sv("darkMode",JSON.stringify(on));
+  applyDarkMode(on);
+  showSection(curSection); // re-render to pick up new colours
+}
+// Apply on startup
+(function(){if(JSON.parse(ld("darkMode","false")))applyDarkMode(true);})();
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ── MOOD TRACKER ──────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+const MOOD_OPTS=[
+  {v:5,emoji:"🤩",label:"Amazing",  color:"#F0A8C0"},
+  {v:4,emoji:"😊",label:"Good",     color:"#90C8A8"},
+  {v:3,emoji:"😌",label:"Okay",     color:"#B4A8D8"},
+  {v:2,emoji:"😔",label:"Low",      color:"#F0C090"},
+  {v:1,emoji:"😢",label:"Rough",    color:"#D08080"},
+];
+const MOOD_NOTES_PROMPTS=["What made today feel this way?","What would have made today better?","One thing I'm grateful for despite today...","What am I feeling in my body?"];
+
+function moodLog(){return ldo("mood_log_v1");}
+function saveMoodLog(o){svo("mood_log_v1",o);}
+
+function renderMood(){
+  document.getElementById("accentStrip").style.background=ACCENT_STRIPS.mood;
+  const log=moodLog();
+  const todayKey=tds();
+  const todayMood=log[todayKey];
+
+  // Build last 30 days for graph
+  const days=[];
+  for(let i=29;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const k=d.toISOString().split("T")[0];
+    days.push({k,v:log[k]?.v||0,emoji:log[k]?.emoji||"",d});
+  }
+  const avg=(days.filter(d=>d.v>0).reduce((s,d)=>s+d.v,0)/Math.max(1,days.filter(d=>d.v>0).length)).toFixed(1);
+  const streak=(()=>{let s=0,d=new Date();while(true){const k=d.toISOString().split("T")[0];if(log[k]?.v){s++;d.setDate(d.getDate()-1);}else break;}return s;})();
+
+  // Mood graph — 30 bars
+  const maxH=52;
+  const bars=days.map(day=>{
+    const mo=MOOD_OPTS.find(m=>m.v===day.v);
+    const h=day.v?Math.round(day.v/5*maxH):4;
+    const isToday=day.k===todayKey;
+    const label=day.d.getDate()===1?day.d.toLocaleDateString("en",{month:"short"}):"";
+    return`<div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;">
+      <div style="width:100%;max-width:14px;height:${maxH}px;display:flex;align-items:flex-end;justify-content:center;">
+        <div style="width:${isToday?"12px":"8px"};height:${h}px;border-radius:4px 4px 2px 2px;background:${day.v?(mo?.color||"#C8B8E8"):"rgba(200,180,220,.2)"};transition:height .4s;${isToday?"box-shadow:0 0 6px rgba(240,160,192,.5);":""}"></div>
+      </div>
+      ${isToday?`<div style="font-size:9px;">${day.emoji||"·"}</div>`:`<div style="font-size:8px;color:var(--ink-light);">${label}</div>`}
+    </div>`;
+  }).join("");
+
+  // Monthly mood heatmap (current month)
+  const mi=new Date().getMonth();
+  const m=MONTHS[mi];
+  let heatCells="";
+  const DAY_H=["S","M","T","W","T","F","S"];
+  DAY_H.forEach(d=>heatCells+=`<div style="font-size:8px;font-weight:900;color:var(--ink-light);text-align:center;">${d}</div>`);
+  for(let i=0;i<m.start;i++)heatCells+=`<div></div>`;
+  for(let d=1;d<=m.days;d++){
+    const k=`2026-${String(mi+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const entry=log[k];
+    const mo=entry?MOOD_OPTS.find(x=>x.v===entry.v):null;
+    const isToday=k===todayKey;
+    heatCells+=`<div style="aspect-ratio:1;border-radius:6px;background:${mo?mo.color+"55":"rgba(200,180,220,.1)"};border:${isToday?"2px solid var(--rose)":"1px solid transparent"};display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;" title="${d}${mo?" · "+mo.label:""}" onclick="document.getElementById('mood-date').value='${k}';document.getElementById('mood-entry-box').style.display='block';">${mo?mo.emoji:d}</div>`;
+  }
+
+  // Today's entry or prompt
+  const prompt=MOOD_NOTES_PROMPTS[new Date().getDay()%MOOD_NOTES_PROMPTS.length];
+
+  document.getElementById("pageInner").innerHTML=`
+    <div class="section-heading">😊 Mood Tracker</div>
+    <div class="section-sub">How are you feeling today? 🌸</div>
+    <div class="divider"></div>
+
+    <!-- Log today -->
+    <div style="background:white;border:1.5px solid #EEE0EC;border-radius:18px;padding:14px;margin-bottom:14px;box-shadow:0 2px 10px rgba(180,120,160,.07);">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-light);margin-bottom:10px;">✦ Log Today's Mood</div>
+      <div style="display:flex;gap:8px;justify-content:space-between;margin-bottom:12px;">
+        ${MOOD_OPTS.map(mo=>`<div onclick="logMood('${todayKey}',${mo.v},'${mo.emoji}')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:14px;cursor:pointer;border:2.5px solid ${(todayMood?.v===mo.v)?"var(--rose)":"rgba(200,180,220,.2)"};background:${(todayMood?.v===mo.v)?mo.color+"22":"transparent"};transition:all .2s;">
+          <div style="font-size:26px;">${mo.emoji}</div>
+          <div style="font-size:9px;font-weight:900;color:${(todayMood?.v===mo.v)?mo.color:"var(--ink-light)"};">${mo.label}</div>
+        </div>`).join("")}
+      </div>
+      <textarea id="mood-note-today" style="width:100%;border:1.5px solid #EEE0EC;border-radius:10px;padding:9px 11px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;color:var(--ink);background:#FAFAFA;outline:none;resize:none;min-height:60px;line-height:1.65;" placeholder="${prompt}" onkeydown="event.stopPropagation()" oninput="saveMoodNote('${todayKey}',this.value)">${todayMood?.note||""}</textarea>
+    </div>
+
+    <!-- Stats -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+      ${[
+        {v:streak+"d",  l:"Streak",       c:"var(--rose)"},
+        {v:avg,          l:"Avg (30d)",    c:"var(--lavender)"},
+        {v:Object.keys(log).length, l:"Days Logged", c:"var(--mint)"},
+      ].map(s=>`<div style="background:white;border:1.5px solid #EEE0EC;border-radius:14px;padding:12px 6px;text-align:center;box-shadow:0 1px 6px rgba(180,120,160,.05);">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:${s.c};line-height:1;">${s.v}</div>
+        <div style="font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-light);margin-top:4px;">${s.l}</div>
+      </div>`).join("")}
+    </div>
+
+    <!-- 30-day bar chart -->
+    <div style="background:white;border:1.5px solid #EEE0EC;border-radius:16px;padding:13px 14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(180,120,160,.06);">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:10px;">📊 Last 30 Days</div>
+      <div style="display:flex;gap:2px;align-items:flex-end;height:${maxH+20}px;">${bars}</div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;">
+        ${MOOD_OPTS.slice().reverse().map(mo=>`<div style="display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:var(--ink-light);">
+          <div style="width:8px;height:8px;border-radius:50%;background:${mo.color};"></div>${mo.label}
+        </div>`).join("")}
+      </div>
+    </div>
+
+    <!-- Monthly heatmap -->
+    <div style="background:white;border:1.5px solid #EEE0EC;border-radius:16px;padding:13px 14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(180,120,160,.06);">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:10px;">📅 ${m.name} at a Glance</div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">${heatCells}</div>
+    </div>
+
+    <!-- Past entry editor (hidden by default) -->
+    <div id="mood-entry-box" style="display:none;background:linear-gradient(135deg,#FFF0F6,#F8F0FF);border:1.5px solid #F0C8D8;border-radius:16px;padding:13px 14px;margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--rose-dark);margin-bottom:10px;">✏️ Edit Entry</div>
+      <input id="mood-date" type="date" style="width:100%;border:1.5px solid #EEE0EC;border-radius:9px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:white;outline:none;margin-bottom:9px;"/>
+      <div style="display:flex;gap:8px;justify-content:space-between;margin-bottom:10px;">
+        ${MOOD_OPTS.map(mo=>`<div onclick="window._editMoodV=${mo.v};window._editMoodE='${mo.emoji}';document.querySelectorAll('.edit-mood-btn').forEach(d=>{d.style.border='2.5px solid transparent';d.style.background='transparent';});this.style.border='2.5px solid var(--rose)';this.style.background='${mo.color}22'" class="edit-mood-btn" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 3px;border-radius:12px;cursor:pointer;border:2.5px solid transparent;transition:all .15s;">
+          <div style="font-size:22px;">${mo.emoji}</div>
+          <div style="font-size:9px;font-weight:800;color:var(--ink-light);">${mo.label}</div>
+        </div>`).join("")}
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="savePastMood()" style="flex:2;background:linear-gradient(135deg,#C8B8E8,#A898D0);border:none;border-radius:10px;padding:10px;font-size:12px;font-weight:900;color:white;cursor:pointer;font-family:'Nunito',sans-serif;">💾 Save</button>
+        <button onclick="document.getElementById('mood-entry-box').style.display='none'" style="flex:1;background:white;border:1.5px solid #EEE0EC;border-radius:10px;padding:9px;font-size:12px;font-weight:800;color:var(--ink-light);cursor:pointer;font-family:'Nunito',sans-serif;">Cancel</button>
+      </div>
+    </div>
+  `;
+}
+
+function logMood(key,v,emoji){
+  const log=moodLog();
+  log[key]={...(log[key]||{}),v,emoji,ts:Date.now()};
+  saveMoodLog(log);renderMood();
+}
+function saveMoodNote(key,note){
+  const log=moodLog();
+  log[key]={...(log[key]||{}),note};
+  saveMoodLog(log);
+}
+function savePastMood(){
+  const key=document.getElementById("mood-date")?.value;
+  if(!key)return;
+  const v=window._editMoodV;const emoji=window._editMoodE;
+  if(!v)return;
+  const log=moodLog();
+  log[key]={...(log[key]||{}),v,emoji,ts:Date.now()};
+  saveMoodLog(log);
+  document.getElementById("mood-entry-box").style.display="none";
+  renderMood();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ── PRAYER WALL ───────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+const PRAYER_CATS=["Personal","Family","Health","Work","Finances","Relationships","Church","World","Praise","Other"];
+const PRAYER_STATUS=[
+  {key:"praying",  label:"🙏 Praying",   bg:"#FFF8DC",col:"#A08020"},
+  {key:"trusting", label:"✝️ Trusting",   bg:"#F0EEFF",col:"#7060A8"},
+  {key:"answered", label:"🌟 Answered",   bg:"#EDFFF8",col:"#3A8860"},
+];
+
+function prayerRequests(){return lda("prayer_wall_v1");}
+function savePrayer(a){sva("prayer_wall_v1",a);}
+function prUID(){return "pw"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+
+let editingPrayerId=null;
+let prayerFilter="all";
+
+function renderPrayer(){
+  document.getElementById("accentStrip").style.background=ACCENT_STRIPS.prayer;
+  const all=prayerRequests();
+  const filtered=prayerFilter==="all"?all:all.filter(p=>p.status===prayerFilter);
+  const answered=all.filter(p=>p.status==="answered").length;
+
+  function statusBadge(s){
+    const st=PRAYER_STATUS.find(x=>x.key===s)||PRAYER_STATUS[0];
+    return`<span style="background:${st.bg};color:${st.col};border-radius:20px;padding:2px 9px;font-size:10px;font-weight:900;">${st.label}</span>`;
+  }
+
+  function prayerCard(p){
+    if(editingPrayerId===p.id) return prayerEditForm(p);
+    const dt=p.date?new Date(p.date+"T12:00:00").toLocaleDateString("en",{month:"short",day:"numeric",year:"numeric"}):"";
+    const answeredDt=p.answeredDate?new Date(p.answeredDate+"T12:00:00").toLocaleDateString("en",{month:"short",day:"numeric",year:"numeric"}):"";
+    return`<div style="background:white;border:1.5px solid #F0E8C8;border-left:4px solid ${p.status==="answered"?"#90C8A8":p.status==="trusting"?"#B4A8D8":"#E8D060"};border-radius:14px;padding:13px 14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(200,160,40,.06);transition:all .18s;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:7px;">
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">${statusBadge(p.status)}${p.category?`<span style="font-size:10px;font-weight:800;background:#FFF8DC;color:#A08020;border-radius:20px;padding:2px 9px;">${p.category}</span>`:""}</div>
+        <div style="display:flex;gap:4px;flex-shrink:0;">
+          <button onclick="editingPrayerId='${p.id}';renderPrayer()" style="width:28px;height:28px;border-radius:50%;background:var(--blush);border:none;cursor:pointer;font-size:13px;">✏️</button>
+          <button onclick="deletePrayerRequest('${p.id}')" style="width:28px;height:28px;border-radius:50%;background:#FFF8F0;border:none;cursor:pointer;font-size:13px;">🗑️</button>
+        </div>
+      </div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--ink);line-height:1.5;margin-bottom:7px;">${p.request}</div>
+      ${p.scripture?`<div style="font-size:12px;font-weight:700;color:#A08020;margin-bottom:5px;font-style:italic;">"${p.scripture}"</div>`:""}
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:${p.notes?"6px":"0"};">
+        ${dt?`<span style="font-size:10px;font-weight:700;color:var(--ink-light);">📅 ${dt}</span>`:""}
+        ${answeredDt&&p.status==="answered"?`<span style="font-size:10px;font-weight:800;color:#3A8860;">🌟 Answered ${answeredDt}</span>`:""}
+      </div>
+      ${p.notes?`<div style="font-size:12px;font-weight:600;color:var(--ink-light);line-height:1.5;border-top:1px solid #F0E8C0;padding-top:6px;margin-top:4px;">${p.notes}</div>`:""}
+      ${p.status!=="answered"?`<div style="display:flex;gap:7px;margin-top:10px;">
+        <button onclick="markAnswered('${p.id}')" style="flex:1;background:linear-gradient(135deg,#C8E8D8,#90C8A8);border:none;border-radius:10px;padding:8px;font-size:11px;font-weight:900;color:#1A5838;cursor:pointer;font-family:'Nunito',sans-serif;">🌟 Mark Answered</button>
+        ${p.status==="praying"?`<button onclick="updatePrayerStatus('${p.id}','trusting')" style="flex:1;background:linear-gradient(135deg,#E8E0F8,#C8B8E8);border:none;border-radius:10px;padding:8px;font-size:11px;font-weight:900;color:#5848A0;cursor:pointer;font-family:'Nunito',sans-serif;">✝️ Trusting</button>`:""}
+      </div>`:`<div style="margin-top:8px;padding:8px 11px;background:#EDFFF8;border-radius:10px;font-size:12px;font-weight:700;color:#3A8860;">🙌 ${p.testimony||"Prayer answered! Praise God."}</div>`}
+    </div>`;
+  }
+
+  function prayerEditForm(p){
+    const isNew=!p.id;
+    return`<div style="background:linear-gradient(135deg,#FFFDE8,#FFF8DC);border:1.5px solid #E8D878;border-radius:18px;padding:14px;margin-bottom:12px;">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#8A6010;margin-bottom:11px;">${isNew?"🙏 New Prayer Request":"✏️ Edit Prayer"}</div>
+      <textarea id="pr-request" style="width:100%;border:1.5px solid #EEE0C8;border-radius:10px;padding:9px 11px;font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--ink);background:white;outline:none;resize:none;min-height:80px;line-height:1.65;margin-bottom:8px;" placeholder="What would you like to bring before God today?" onkeydown="event.stopPropagation()">${p.request||""}</textarea>
+      <input id="pr-scripture" value="${p.scripture||""}" placeholder="📖 A scripture to stand on (optional)" style="width:100%;border:1.5px solid #EEE0C8;border-radius:10px;padding:8px 11px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:#8A6010;background:white;outline:none;font-style:italic;margin-bottom:8px;" onkeydown="event.stopPropagation()"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px;">
+        <div>
+          <div style="font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-light);margin-bottom:4px;">Category</div>
+          <select id="pr-cat" style="width:100%;border:1.5px solid #EEE0C8;border-radius:9px;padding:7px 9px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:white;outline:none;">
+            <option value="">— Choose —</option>
+            ${PRAYER_CATS.map(ct=>`<option value="${ct}" ${p.category===ct?"selected":""}>${ct}</option>`).join("")}
+          </select>
+        </div>
+        <div>
+          <div style="font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-light);margin-bottom:4px;">Status</div>
+          <select id="pr-status" style="width:100%;border:1.5px solid #EEE0C8;border-radius:9px;padding:7px 9px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:white;outline:none;">
+            ${PRAYER_STATUS.map(s=>`<option value="${s.key}" ${(p.status||"praying")===s.key?"selected":""}>${s.label}</option>`).join("")}
+          </select>
+        </div>
+      </div>
+      <input id="pr-date" type="date" value="${p.date||tds()}" style="width:100%;border:1.5px solid #EEE0C8;border-radius:10px;padding:8px 11px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:white;outline:none;margin-bottom:8px;"/>
+      <textarea id="pr-notes" style="width:100%;border:1.5px solid #EEE0C8;border-radius:10px;padding:8px 11px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;color:var(--ink);background:white;outline:none;resize:none;min-height:50px;margin-bottom:10px;" placeholder="Notes, updates, how God is moving..." onkeydown="event.stopPropagation()">${p.notes||""}</textarea>
+      <div style="display:flex;gap:8px;">
+        <button onclick="savePrayerRequest('${p.id||""}')" style="flex:2;background:linear-gradient(135deg,#E8D890,#C8A840);border:none;border-radius:10px;padding:11px;font-size:13px;font-weight:900;color:#3C2800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 3px 10px rgba(200,160,40,.3);">🙏 Save Prayer</button>
+        <button onclick="editingPrayerId=null;renderPrayer()" style="flex:1;background:white;border:1.5px solid #EEE0C8;border-radius:10px;padding:10px;font-size:12px;font-weight:800;color:var(--ink-light);cursor:pointer;font-family:'Nunito',sans-serif;">Cancel</button>
+      </div>
+    </div>`;
+  }
+
+  document.getElementById("pageInner").innerHTML=`
+    <div class="section-heading">🙏 Prayer Wall</div>
+    <div class="section-sub">"Do not be anxious about anything, but in everything by prayer..." — Phil 4:6 🌸</div>
+    <div class="divider"></div>
+
+    <!-- Stats -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+      ${[
+        {v:all.length,    l:"Total",    c:"#A08020",bg:"#FFF8DC"},
+        {v:all.filter(p=>p.status==="praying"||p.status==="trusting").length, l:"Active", c:"#7060A8",bg:"#F0EEFF"},
+        {v:answered,      l:"Answered 🌟", c:"#3A8860",bg:"#EDFFF8"},
+      ].map(s=>`<div style="background:${s.bg};border:1.5px solid ${s.c}40;border-radius:14px;padding:12px 6px;text-align:center;">
+        <div style="font-size:26px;font-weight:900;color:${s.c};font-family:'Cormorant Garamond',serif;line-height:1;">${s.v}</div>
+        <div style="font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:${s.c};margin-top:4px;">${s.l}</div>
+      </div>`).join("")}
+    </div>
+
+    <!-- New prayer button -->
+    ${editingPrayerId==="new"?"":`<button onclick="editingPrayerId='new';renderPrayer()" style="width:100%;background:linear-gradient(135deg,#E8D890,#C8A840);border:none;border-radius:14px;padding:12px;font-size:13px;font-weight:900;color:#3C2800;cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:12px;box-shadow:0 3px 12px rgba(200,160,40,.3);">🙏 Add Prayer Request</button>`}
+    ${editingPrayerId==="new"?prayerEditForm({}):""}
+
+    <!-- Filter chips -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+      ${[{key:"all",label:"✦ All"},...PRAYER_STATUS].map(f=>{
+        const active=prayerFilter===f.key;
+        return`<div onclick="prayerFilter='${f.key}';renderPrayer()" style="font-size:10px;font-weight:800;padding:5px 11px;border-radius:20px;cursor:pointer;background:${active?"linear-gradient(135deg,#E8D890,#C8A840)":f.bg||"#FFF8DC"};color:${active?"#3C2800":f.col||"#A08020"};transition:all .15s;">${f.label}</div>`;
+      }).join("")}
+    </div>
+
+    ${filtered.length===0?`<div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;margin-bottom:12px;">🙏</div><div style="font-family:'Dancing Script',cursive;font-size:20px;color:var(--ink-light);">${prayerFilter==="answered"?"No answered prayers yet — they're coming! 🌟":"Bring it to God 🌸"}</div></div>`:""}
+    ${filtered.map(p=>prayerCard(p)).join("")}
+
+    ${all.filter(p=>p.status==="answered").length?`<div style="margin-top:16px;background:linear-gradient(135deg,#EDFFF8,#E8FFF4);border:1.5px solid #90C8A8;border-radius:14px;padding:13px 14px;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic;color:#3A8860;text-align:center;line-height:1.7;">"He has done great things."<br/><span style="font-size:13px;">— Psalm 126:3</span></div>
+    </div>`:""}
+  `;
+}
+
+function savePrayerRequest(id){
+  const isNew=!id||id==="";
+  const all=isNew?prayerRequests():prayerRequests().filter(p=>p.id!==id);
+  all.unshift({
+    id:isNew?prUID():id,
+    request:document.getElementById("pr-request")?.value?.trim()||"",
+    scripture:document.getElementById("pr-scripture")?.value?.trim()||"",
+    category:document.getElementById("pr-cat")?.value||"",
+    status:document.getElementById("pr-status")?.value||"praying",
+    date:document.getElementById("pr-date")?.value||tds(),
+    notes:document.getElementById("pr-notes")?.value||"",
+  });
+  savePrayer(all);
+  editingPrayerId=null;
+  showToast("Prayer saved 🙏");
+  renderPrayer();
+}
+function deletePrayerRequest(id){
+  if(!confirm("Delete this prayer?"))return;
+  savePrayer(prayerRequests().filter(p=>p.id!==id));
+  renderPrayer();
+}
+function markAnswered(id){
+  const all=prayerRequests();const p=all.find(p=>p.id===id);
+  if(!p)return;
+  p.status="answered";p.answeredDate=tds();
+  const testimony=prompt("Add a testimony (optional) — how did God answer?");
+  if(testimony)p.testimony=testimony;
+  savePrayer(all);showToast("🌟 Praise God!");renderPrayer();
+}
+function updatePrayerStatus(id,status){
+  const all=prayerRequests();const p=all.find(p=>p.id===id);
+  if(p){p.status=status;savePrayer(all);renderPrayer();}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ── TAGS / LABELS ─────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+const TAG_COLORS=["#F0A8C0","#B4A8D8","#90C8A8","#F0C090","#90B8D8","#F0A8A8","#C8A8E0","#D4A840","#A8C8E8","#D08090"];
+const DEFAULT_TAGS=[
+  {name:"work",    color:"#90B8D8"},
+  {name:"personal",color:"#F0A8C0"},
+  {name:"faith",   color:"#D4A840"},
+  {name:"health",  color:"#90C8A8"},
+  {name:"urgent",  color:"#F0A8A8"},
+];
+
+function allTags(){
+  try{const t=JSON.parse(ld("journal_tags","null"));return t||DEFAULT_TAGS;}catch(e){return DEFAULT_TAGS;}
+}
+function saveTags(a){sv("journal_tags",JSON.stringify(a));}
+
+function toggleTaskTag(taskId,tagName){
+  const todos=lda("todos");
+  const t=todos.find(t=>t.id===taskId);
+  if(!t)return;
+  if(!t.tags)t.tags=[];
+  const idx=t.tags.indexOf(tagName);
+  if(idx>=0)t.tags.splice(idx,1);
+  else t.tags.push(tagName);
+  sva("todos",todos);
+  closeTaskModal();openTaskModal(taskId);
+}
+function toggleGoalTag(goalId,tagName){
+  const goals_=goals();
+  const g=goals_.find(g=>g.id===goalId);
+  if(!g)return;
+  if(!g.tags)g.tags=[];
+  const idx=g.tags.indexOf(tagName);
+  if(idx>=0)g.tags.splice(idx,1);
+  else g.tags.push(tagName);
+  saveGoals(goals_);renderGoals();
+}
+function renderTags(){
+  document.getElementById("accentStrip").style.background=ACCENT_STRIPS.search;
+  const tags=allTags();
+  // Count uses
+  const todos=lda("todos");
+  const goalsList=goals();
+  function useCount(name){
+    return todos.filter(t=>(t.tags||[]).includes(name)).length
+         + goalsList.filter(g=>(g.tags||[]).includes(name)).length;
+  }
+
+  document.getElementById("pageInner").innerHTML=`
+    <div class="section-heading">🏷️ Tags & Labels</div>
+    <div class="section-sub">Organise tasks and goals with coloured tags 🌸</div>
+    <div class="divider"></div>
+
+    <!-- Create tag -->
+    <div style="background:white;border:1.5px solid #EEE0EC;border-radius:16px;padding:13px 14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(180,120,160,.06);">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-light);margin-bottom:9px;">✦ Create New Tag</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <input id="tag-name" placeholder="Tag name (no spaces)..." maxlength="20"
+          style="flex:1;border:1.5px solid #EEE0EC;border-radius:10px;padding:9px 12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--ink);background:#FAFAFA;outline:none;"
+          onkeydown="if(event.key==='Enter'){event.stopPropagation();addTag()}"/>
+        <button onclick="addTag()" style="background:linear-gradient(135deg,#C8B8E8,#A898D0);border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:900;color:white;cursor:pointer;font-family:'Nunito',sans-serif;">+ Add</button>
+      </div>
+      <div style="font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:6px;">Colour</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;" id="tag-color-row">
+        ${TAG_COLORS.map((col,i)=>`<div onclick="window._newTagColor='${col}';document.querySelectorAll('#tag-color-row div').forEach(d=>{d.style.transform=d.dataset.c==='${col}'?'scale(1.25)':'scale(1)';})" data-c="${col}" style="width:24px;height:24px;border-radius:50%;background:${col};cursor:pointer;transition:transform .15s;transform:${i===0?"scale(1.25)":"scale(1)"};"></div>`).join("")}
+      </div>
+    </div>
+
+    <!-- Existing tags -->
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      ${tags.length===0?`<div style="text-align:center;padding:28px;color:var(--ink-light);font-size:13px;font-weight:700;">No tags yet — create one above 🌸</div>`:""}
+      ${tags.map((tag,i)=>`
+        <div style="background:white;border:1.5px solid #EEE0EC;border-left:4px solid ${tag.color};border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 6px rgba(180,120,160,.05);">
+          <div style="width:12px;height:12px;border-radius:50%;background:${tag.color};flex-shrink:0;"></div>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:900;color:var(--ink);">#${tag.name}</div>
+            <div style="font-size:11px;font-weight:700;color:var(--ink-light);">${useCount(tag.name)} item${useCount(tag.name)!==1?"s":""}</div>
+          </div>
+          <button onclick="filterByTag('${tag.name}')" style="padding:5px 12px;border-radius:20px;background:${tag.color}22;border:1px solid ${tag.color};color:${tag.color};font-size:11px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;">Filter</button>
+          <button onclick="deleteTag(${i})" style="width:28px;height:28px;border-radius:50%;background:#FFF0F0;border:none;cursor:pointer;font-size:13px;">🗑️</button>
+        </div>`).join("")}
+    </div>
+
+    <div style="margin-top:20px;background:linear-gradient(135deg,#F8F0F8,#F0EEFF);border:1.5px solid #EEE0EC;border-radius:14px;padding:12px 14px;">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--lavender);margin-bottom:7px;">💡 How to add tags</div>
+      <div style="font-size:12px;font-weight:700;color:var(--ink-mid);line-height:1.7;">Open any task → tap ✏️ → the Tags section shows in the edit modal. Tap a tag to apply it. Tags appear as coloured pills on task cards.<br/><br/>Use Search (🔍) to filter by tag across the whole journal.</div>
+    </div>
+  `;
+  window._newTagColor=TAG_COLORS[0];
+}
+function addTag(){
+  const name=document.getElementById("tag-name")?.value?.trim().replace(/\s+/g,"").toLowerCase();
+  if(!name)return;
+  const tags=allTags();
+  if(tags.find(t=>t.name===name)){showToast("Tag already exists!");return;}
+  tags.push({name,color:window._newTagColor||TAG_COLORS[0]});
+  saveTags(tags);
+  document.getElementById("tag-name").value="";
+  renderTags();
+}
+function deleteTag(i){
+  if(!confirm("Delete this tag? It will be removed from all items."))return;
+  const tags=allTags();
+  const name=tags[i].name;
+  tags.splice(i,1);
+  saveTags(tags);
+  // Remove from todos
+  const todos=lda("todos");
+  todos.forEach(t=>{if(t.tags)t.tags=t.tags.filter(x=>x!==name);});
+  sva("todos",todos);
+  // Remove from goals
+  const gl=goals();
+  gl.forEach(g=>{if(g.tags)g.tags=g.tags.filter(x=>x!==name);});
+  saveGoals(gl);
+  renderTags();
+}
+function filterByTag(name){
+  // Jump to todo with this tag pre-filtered
+  window._todoTagFilter=name;
+  showSection("todo");
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ── GLOBAL SEARCH ─────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+function renderSearch(){
+  document.getElementById("accentStrip").style.background=ACCENT_STRIPS.search;
+  const q=window._searchQuery||"";
+
+  document.getElementById("pageInner").innerHTML=`
+    <div class="section-heading">🔍 Search</div>
+    <div class="section-sub">Find anything across your journal 🌸</div>
+    <div class="divider"></div>
+
+    <!-- Search bar -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <input id="search-input" value="${q.replace(/"/g,'&quot;')}" placeholder="Search tasks, goals, diary, prayers, reflections..."
+        style="flex:1;border:1.5px solid #EEE0EC;border-radius:14px;padding:12px 16px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--ink);background:white;outline:none;box-shadow:0 2px 8px rgba(180,120,160,.08);"
+        oninput="window._searchQuery=this.value;doSearch(this.value)"
+        onkeydown="if(event.key==='Enter'){event.stopPropagation();doSearch(this.value)}"/>
+      ${q?`<button onclick="window._searchQuery='';document.getElementById('search-input').value='';doSearch('')" style="background:white;border:1.5px solid #EEE0EC;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:800;color:var(--ink-light);cursor:pointer;">✕</button>`:""}
+    </div>
+
+    <!-- Tag filter shortcuts -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-light);align-self:center;">Tags:</div>
+      ${allTags().map(tag=>`<div onclick="document.getElementById('search-input').value='#${tag.name}';window._searchQuery='#${tag.name}';doSearch('#${tag.name}')" style="font-size:11px;font-weight:800;padding:4px 11px;border-radius:20px;cursor:pointer;background:${tag.color}22;color:${tag.color};border:1px solid ${tag.color}44;transition:all .15s;">#${tag.name}</div>`).join("")}
+    </div>
+
+    <div id="search-results">${q?"":`<div style="text-align:center;padding:40px 16px;"><div style="font-size:40px;margin-bottom:12px;">🔍</div><div style="font-family:'Dancing Script',cursive;font-size:20px;color:var(--ink-light);">Type to search your journal</div><div style="font-size:12px;font-weight:700;color:var(--ink-light);margin-top:8px;">Tasks · Goals · Diary · Prayers · Bible reflections · Notes</div></div>`}</div>
+  `;
+  if(q)doSearch(q);
+}
+
+function doSearch(q){
+  const resultsEl=document.getElementById("search-results");
+  if(!resultsEl)return;
+  q=(q||"").trim().toLowerCase();
+  if(!q){resultsEl.innerHTML=`<div style="text-align:center;padding:32px;font-size:13px;font-weight:700;color:var(--ink-light);">Type to search 🔍</div>`;return;}
+
+  const isTagSearch=q.startsWith("#");
+  const tagQ=isTagSearch?q.slice(1):"";
+  const results=[];
+
+  // ── Search Tasks ──
+  lda("todos").forEach(t=>{
+    const match=!isTagSearch
+      ?(t.text.toLowerCase().includes(q)||t.note?.toLowerCase().includes(q))
+      :(t.tags||[]).some(tag=>tag.toLowerCase().includes(tagQ));
+    if(match){
+      const tagHtml=(t.tags||[]).map(tag=>{const td=allTags().find(x=>x.name===tag);return`<span style="background:${td?td.color+"33":"#F0E8F8"};color:${td?td.color:"var(--rose-dark)"};border-radius:20px;padding:1px 8px;font-size:10px;font-weight:800;">#${tag}</span>`;}).join("");
+      results.push({type:"✅ Task",text:t.text,sub:t.done?"Done":"Active",extra:tagHtml,action:`openTaskModal('${t.id}')`,color:"#90B8D8"});
+    }
+  });
+
+  // ── Search Goals ──
+  goals().forEach(g=>{
+    const match=!isTagSearch
+      ?(g.title?.toLowerCase().includes(q)||g.why?.toLowerCase().includes(q)||g.notes?.toLowerCase().includes(q))
+      :(g.tags||[]).some(tag=>tag.toLowerCase().includes(tagQ));
+    if(match){
+      const tagHtml=(g.tags||[]).map(tag=>{const td=allTags().find(x=>x.name===tag);return`<span style="background:${td?td.color+"33":"#F0E8F8"};color:${td?td.color:"var(--rose-dark)"};border-radius:20px;padding:1px 8px;font-size:10px;font-weight:800;">#${tag}</span>`;}).join("");
+      results.push({type:"🎯 Goal",text:g.title||"Untitled goal",sub:`${g.status||"Active"} · ${g.progress||0}%`,extra:tagHtml,action:`showSection('goals')`,color:"var(--lavender)"});
+    }
+  });
+
+  // ── Search Diary ──
+  lda("diary_v1").forEach(e=>{
+    if(!isTagSearch&&(e.notes?.toLowerCase().includes(q))){
+      const dt=e.date?new Date(e.date+"T12:00:00").toLocaleDateString("en",{month:"short",day:"numeric"}):"";
+      const preview=(e.notes||"").slice(0,60)+"…";
+      results.push({type:"📔 Diary",text:dt,sub:preview,extra:"",action:`curDiaryEntry='${e.id}';showSection('diary')`,color:"var(--rose)"});
+    }
+  });
+
+  // ── Search Prayers ──
+  prayerRequests().forEach(p=>{
+    if(!isTagSearch&&(p.request?.toLowerCase().includes(q)||p.notes?.toLowerCase().includes(q))){
+      results.push({type:"🙏 Prayer",text:p.request?.slice(0,60)||"Prayer",sub:p.status,extra:"",action:`prayerFilter='all';showSection('prayer')`,color:"#C8A840"});
+    }
+  });
+
+  // ── Search Bible Reflections ──
+  lda("bible_reflect_v1").forEach(e=>{
+    if(!isTagSearch&&(e.reference?.toLowerCase().includes(q)||e.verse?.toLowerCase().includes(q)||e.observation?.toLowerCase().includes(q)||e.application?.toLowerCase().includes(q))){
+      results.push({type:"✝️ Reflection",text:e.reference||"Bible Reflection",sub:(e.verse||"").slice(0,60)+"…",extra:"",action:`curBREntry='${e.id}';showSection('biblereflect')`,color:"#C8A840"});
+    }
+  });
+
+  // ── Search Daily Journal ──
+  for(let i=1;i<=365;i++){
+    const j=ld("d_j_"+i);const pr=ld("d_pr_"+i);
+    if(!isTagSearch){
+      const hit=(j&&j.toLowerCase().includes(q))||(pr&&pr.toLowerCase().includes(q));
+      if(hit){
+        const dt=dateFromDOY&&dateFromDOY(i);
+        const dStr=dt?dt.toLocaleDateString("en",{month:"short",day:"numeric"}):"Day "+i;
+        const preview=(j||pr||"").slice(0,60)+"…";
+        results.push({type:"📝 Daily",text:dStr,sub:preview,extra:"",action:`curDay=${i};showSection('days');renderDay(${i})`,color:"var(--rose)"});
+      }
+    }
+  }
+
+  // ── Search Notes (My Pages) ──
+  lda("my_pages_v1").forEach(p=>{
+    if(!isTagSearch&&(p.title?.toLowerCase().includes(q)||p.content?.toLowerCase().includes(q))){
+      results.push({type:"📓 Note",text:p.title||"Untitled",sub:(p.content||"").slice(0,60)+"…",extra:"",action:`showSection('pages')`,color:"#B4A8D8"});
+    }
+  });
+
+  if(results.length===0){
+    resultsEl.innerHTML=`<div style="text-align:center;padding:40px 16px;"><div style="font-size:32px;margin-bottom:12px;">🔍</div><div style="font-size:14px;font-weight:800;color:var(--ink-light);">No results for "${q.replace(/"/g,"&quot;")}"</div><div style="font-size:12px;font-weight:700;color:var(--ink-light);margin-top:6px;">Try different words or check spelling</div></div>`;
+    return;
+  }
+
+  resultsEl.innerHTML=`
+    <div style="font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-light);margin-bottom:10px;">${results.length} result${results.length!==1?"s":""}</div>
+    ${results.map(r=>`
+      <div onclick="${r.action}" style="background:white;border:1.5px solid #EEE0EC;border-left:4px solid ${r.color};border-radius:12px;padding:11px 14px;margin-bottom:8px;cursor:pointer;box-shadow:0 2px 6px rgba(180,120,160,.05);transition:all .18s;" onmouseover="this.style.transform='translateX(3px)'" onmouseout="this.style.transform=''">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;">
+              <span style="font-size:10px;font-weight:900;background:${r.color}22;color:${r.color};border-radius:20px;padding:2px 9px;">${r.type}</span>
+              ${r.extra}
+            </div>
+            <div style="font-size:13px;font-weight:800;color:var(--ink);line-height:1.3;">${r.text}</div>
+            ${r.sub?`<div style="font-size:11px;font-weight:600;color:var(--ink-light);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.sub}</div>`:""}
+          </div>
+          <div style="color:var(--ink-light);font-size:16px;flex-shrink:0;">›</div>
+        </div>
+      </div>`).join("")}
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ── FOOD LOG & CALORIE COUNTER ────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+const MEALS=["🌅 Breakfast","☀️ Lunch","🌙 Dinner","🍎 Snacks","💧 Drinks"];
+const MEAL_COLORS={"🌅 Breakfast":"#F0D8A8","☀️ Lunch":"#A8D8C8","🌙 Dinner":"#C8B8E8","🍎 Snacks":"#F0A8B8","💧 Drinks":"#A8C8E8"};
+
+// Quick-search food database (name, calories per serving, serving)
+const FOOD_DB=[
+  // Breakfast
+  {n:"Egg (boiled)",     c:78,  s:"1 egg"},
+  {n:"Egg (scrambled)",  c:91,  s:"1 egg"},
+  {n:"Toast (white)",    c:80,  s:"1 slice"},
+  {n:"Toast (brown)",    c:70,  s:"1 slice"},
+  {n:"Banana",           c:89,  s:"1 medium"},
+  {n:"Apple",            c:95,  s:"1 medium"},
+  {n:"Orange",           c:62,  s:"1 medium"},
+  {n:"Oatmeal (plain)",  c:150, s:"1 cup"},
+  {n:"Cornflakes",       c:100, s:"1 cup"},
+  {n:"Yogurt (plain)",   c:100, s:"150g"},
+  {n:"Greek yogurt",     c:130, s:"150g"},
+  {n:"Milk (whole)",     c:150, s:"1 cup"},
+  {n:"Milk (skimmed)",   c:83,  s:"1 cup"},
+  {n:"Orange juice",     c:112, s:"1 cup"},
+  // Lunch & Dinner
+  {n:"White rice (cooked)",   c:205, s:"1 cup"},
+  {n:"Brown rice (cooked)",   c:216, s:"1 cup"},
+  {n:"Bread roll",            c:120, s:"1 roll"},
+  {n:"Chicken breast (grilled)",c:165,s:"100g"},
+  {n:"Beef (lean, cooked)",   c:250, s:"100g"},
+  {n:"Fish (tilapia, baked)", c:128, s:"100g"},
+  {n:"Salmon (baked)",        c:208, s:"100g"},
+  {n:"Pasta (cooked)",        c:220, s:"1 cup"},
+  {n:"Soup (vegetable)",      c:72,  s:"1 cup"},
+  {n:"Salad (plain)",         c:20,  s:"1 cup"},
+  {n:"Beans (black, cooked)", c:227, s:"1 cup"},
+  {n:"Lentils (cooked)",      c:230, s:"1 cup"},
+  {n:"Potato (baked)",        c:161, s:"1 medium"},
+  {n:"Sweet potato (baked)",  c:103, s:"1 medium"},
+  {n:"Broccoli (steamed)",    c:55,  s:"1 cup"},
+  {n:"Carrot (raw)",          c:25,  s:"1 medium"},
+  {n:"Plantain (fried)",      c:180, s:"1 cup"},
+  {n:"Jollof rice",           c:280, s:"1 cup"},
+  {n:"Egusi soup",            c:350, s:"1 cup"},
+  {n:"Eba (garri)",           c:330, s:"1 cup"},
+  {n:"Fufu",                  c:290, s:"1 cup"},
+  {n:"Pounded yam",           c:250, s:"1 cup"},
+  {n:"Suya (beef)",           c:220, s:"100g"},
+  // Snacks
+  {n:"Groundnut (peanuts)",   c:160, s:"28g / handful"},
+  {n:"Chocolate bar",         c:235, s:"1 bar (45g)"},
+  {n:"Biscuits (digestive)",  c:140, s:"3 pieces"},
+  {n:"Chin chin",             c:180, s:"1 cup"},
+  {n:"Puff puff",             c:120, s:"2 pieces"},
+  {n:"Moi moi",               c:170, s:"1 piece"},
+  {n:"Akara",                 c:130, s:"2 pieces"},
+  // Drinks
+  {n:"Water",                 c:0,   s:"1 glass"},
+  {n:"Coffee (black)",        c:5,   s:"1 cup"},
+  {n:"Coffee (with milk)",    c:40,  s:"1 cup"},
+  {n:"Tea (black)",           c:2,   s:"1 cup"},
+  {n:"Tea (with milk+sugar)", c:50,  s:"1 cup"},
+  {n:"Malt drink",            c:170, s:"330ml can"},
+  {n:"Soft drink (Cola)",     c:140, s:"330ml can"},
+  {n:"Beer (lager)",          c:153, s:"330ml can"},
+  {n:"Red wine",              c:125, s:"150ml glass"},
+];
+
+function foodLog(){return ldo("food_log_v1");}
+function saveFoodLog(o){svo("food_log_v1",o);}
+
+let foodDate=tds();
+let foodSearchQ="";
+let addingMeal=null; // which meal we're adding to
+
+function renderFoodLog(){
+  document.getElementById("accentStrip").style.background=ACCENT_STRIPS.foodlog;
+  const log=foodLog();
+  const dayData=log[foodDate]||{meals:{},goal:parseInt(ld("calorie_goal","2000"))};
+  const goal=parseInt(ld("calorie_goal","2000"));
+
+  // Calc totals
+  let totalCals=0;
+  MEALS.forEach(m=>{
+    (dayData.meals[m]||[]).forEach(entry=>{totalCals+=entry.cals||0;});
+  });
+  const pct=Math.min(100,Math.round(totalCals/goal*100));
+  const remaining=goal-totalCals;
+  const barColor=pct>=100?"#D06060":pct>=80?"#D4A840":"#90C8A8";
+
+  // Date nav helpers
+  function prevDay(){const d=new Date(foodDate+"T12:00:00");d.setDate(d.getDate()-1);foodDate=d.toISOString().split("T")[0];renderFoodLog();}
+  function nextDay(){const d=new Date(foodDate+"T12:00:00");d.setDate(d.getDate()+1);foodDate=d.toISOString().split("T")[0];renderFoodLog();}
+  window.flPrev=prevDay;window.flNext=nextDay;
+
+  const dt=new Date(foodDate+"T12:00:00");
+  const dateLabel=dt.toLocaleDateString("en",{weekday:"long",month:"long",day:"numeric"});
+  const isToday=foodDate===tds();
+
+  // Meal sections
+  function mealSection(meal){
+    const entries=dayData.meals[meal]||[];
+    const mealCals=entries.reduce((s,e)=>s+e.cals,0);
+    const col=MEAL_COLORS[meal]||"#F0E8EC";
+    const isAdding=addingMeal===meal;
+
+    const entryRows=entries.map((e,i)=>`
+      <div style="display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid rgba(200,220,200,.12);">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:800;color:var(--ink);">${e.name}</div>
+          ${e.serving?`<div style="font-size:10px;font-weight:700;color:var(--ink-light);">${e.serving}</div>`:""}
+        </div>
+        <div style="font-size:13px;font-weight:900;color:#3A8060;flex-shrink:0;">${e.cals} kcal</div>
+        <button onclick="removeFoodEntry('${foodDate}','${meal.replace(/'/g,"\\'")}',${i})" style="background:none;border:none;color:#D8C0C8;cursor:pointer;font-size:13px;flex-shrink:0;">✕</button>
+      </div>`).join("");
+
+    // Search results
+    const searchHtml=isAdding?`<div style="padding:10px 0 4px;">
+      <div style="display:flex;gap:7px;margin-bottom:8px;">
+        <input id="food-search" value="${foodSearchQ}" placeholder="Search food or type custom..." style="flex:1;border:1.5px solid #B8D8C0;border-radius:10px;padding:8px 12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--ink);background:white;outline:none;" oninput="foodSearchQ=this.value;renderFoodLog()" onkeydown="event.stopPropagation()"/>
+        <button onclick="addingMeal=null;foodSearchQ='';renderFoodLog()" style="background:white;border:1.5px solid #EEE0EC;border-radius:10px;padding:7px 12px;font-size:12px;font-weight:800;color:var(--ink-light);cursor:pointer;font-family:'Nunito',sans-serif;">✕</button>
+      </div>
+      ${foodSearchQ?`
+        <div style="max-height:220px;overflow-y:auto;">
+          ${FOOD_DB.filter(f=>f.n.toLowerCase().includes(foodSearchQ.toLowerCase())).slice(0,12).map(f=>`
+            <div onclick="addFoodEntry('${foodDate}','${meal.replace(/'/g,"\\'")}','${f.n.replace(/'/g,"\\'")}',${f.c},'${f.s}')" style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;cursor:pointer;transition:background .12s;" onmouseover="this.style.background='rgba(144,200,168,.12)'" onmouseout="this.style.background=''">
+              <div style="flex:1;"><div style="font-size:13px;font-weight:800;color:var(--ink);">${f.n}</div><div style="font-size:10px;font-weight:700;color:var(--ink-light);">${f.s}</div></div>
+              <div style="font-size:12px;font-weight:900;color:#3A8060;flex-shrink:0;">${f.c} kcal</div>
+              <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#A8D8C0,#80C8A0);display:flex;align-items:center;justify-content:center;font-size:16px;color:white;flex-shrink:0;">+</div>
+            </div>`).join("")}
+          ${FOOD_DB.filter(f=>f.n.toLowerCase().includes(foodSearchQ.toLowerCase())).length===0?`
+            <div style="padding:6px 0 4px;font-size:12px;font-weight:700;color:var(--ink-light);">Not in database — add custom below</div>`:``}
+        </div>
+        <!-- Custom entry -->
+        <div style="border-top:1px dashed #C8E8D0;padding-top:10px;margin-top:6px;">
+          <div style="font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:6px;">✦ Custom entry</div>
+          <div style="display:flex;gap:7px;">
+            <input id="custom-cals" type="number" min="0" max="9999" placeholder="Calories" style="width:90px;border:1.5px solid #EEE0EC;border-radius:9px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--ink);background:white;outline:none;text-align:center;" onkeydown="event.stopPropagation()"/>
+            <button onclick="addCustomFood('${foodDate}','${meal.replace(/'/g,"\\'")}','${foodSearchQ.replace(/'/g,"\\'")}');" style="flex:1;background:linear-gradient(135deg,#A8D8C0,#80C8A0);border:none;border-radius:9px;padding:7px;font-size:12px;font-weight:900;color:white;cursor:pointer;font-family:'Nunito',sans-serif;">+ Add "${foodSearchQ.slice(0,20)}"</button>
+          </div>
+        </div>`:`<div style="padding:8px 0;font-size:12px;font-weight:700;color:var(--ink-light);">Start typing to search 200+ foods...</div>`}
+    </div>`:"";
+
+    return`<div style="background:white;border:1.5px solid #EEE0EC;border-radius:16px;overflow:hidden;margin-bottom:10px;box-shadow:0 2px 8px rgba(144,200,168,.07);">
+      <div style="background:${col}55;padding:9px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid ${col};">
+        <div style="font-size:12px;font-weight:900;color:var(--ink);">${meal}</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${mealCals?`<span style="font-size:12px;font-weight:900;color:#3A8060;">${mealCals} kcal</span>`:""}
+          <button onclick="addingMeal='${meal.replace(/'/g,"\\'")}';foodSearchQ='';renderFoodLog()" style="background:${col};border:none;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;color:var(--ink);">+ Add</button>
+        </div>
+      </div>
+      <div style="padding:0 14px;">
+        ${entries.length?entryRows:`<div style="font-size:12px;font-weight:600;color:var(--ink-light);padding:10px 0;">Nothing logged yet</div>`}
+        ${searchHtml}
+      </div>
+    </div>`;
+  }
+
+  // Weekly summary (last 7 days)
+  const weekBars=(()=>{
+    let bars="";
+    for(let i=6;i>=0;i--){
+      const d=new Date();d.setDate(d.getDate()-i);
+      const k=d.toISOString().split("T")[0];
+      const dayLog=log[k]||{};
+      let dayCals=0;
+      MEALS.forEach(m=>{(dayLog.meals?.[m]||[]).forEach(e=>{dayCals+=e.cals||0;});});
+      const h=Math.min(48,Math.round(dayCals/goal*48));
+      const dayName=d.toLocaleDateString("en",{weekday:"short"});
+      const isActive=k===foodDate;
+      const barC=dayCals>=goal?"#D06060":dayCals>=goal*0.8?"#D4A840":"#90C8A8";
+      bars+=`<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;cursor:pointer;" onclick="foodDate='${k}';addingMeal=null;renderFoodLog()">
+        <div style="width:100%;max-width:28px;height:48px;display:flex;align-items:flex-end;justify-content:center;">
+          <div style="width:${isActive?"20px":"14px"};height:${Math.max(4,h)}px;border-radius:4px 4px 2px 2px;background:${dayCals?barC:"rgba(200,220,200,.2)"};transition:all .3s;${isActive?"box-shadow:0 0 6px rgba(90,180,120,.4);":""};"></div>
+        </div>
+        <div style="font-size:9px;font-weight:${isActive?"900":"700"};color:${isActive?"#3A8060":"var(--ink-light)"};">${dayName}</div>
+        ${dayCals?`<div style="font-size:8px;font-weight:800;color:var(--ink-light);">${dayCals}</div>`:""}
+      </div>`;
+    }
+    return bars;
+  })();
+
+  document.getElementById("pageInner").innerHTML=`
+    <div class="section-heading">🥗 Food Log</div>
+    <div class="section-sub">Track your meals · count calories 🌱</div>
+    <div class="divider"></div>
+
+    <!-- Date nav -->
+    <div class="nav-row" style="margin-bottom:12px;">
+      <button class="nav-btn" onclick="flPrev()">◀</button>
+      <div style="font-size:13px;font-weight:800;color:var(--ink);text-align:center;">${isToday?"Today 🌸":dateLabel}</div>
+      <button class="nav-btn" onclick="flNext()">▶</button>
+    </div>
+
+    <!-- Calorie ring + stats -->
+    <div style="background:white;border:1.5px solid #EEE0EC;border-radius:18px;padding:16px 14px;margin-bottom:14px;box-shadow:0 2px 10px rgba(144,200,168,.08);">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <!-- SVG ring -->
+        <div style="position:relative;width:90px;height:90px;flex-shrink:0;">
+          <svg width="90" height="90" viewBox="0 0 90 90">
+            <circle cx="45" cy="45" r="36" fill="none" stroke="#F0F8F0" stroke-width="9"/>
+            <circle cx="45" cy="45" r="36" fill="none" stroke="${barColor}" stroke-width="9"
+              stroke-dasharray="${pct*2.262} 226.2" stroke-linecap="round"
+              transform="rotate(-90 45 45)" style="transition:stroke-dasharray .6s ease;"/>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--ink);line-height:1;">${totalCals}</div>
+            <div style="font-size:9px;font-weight:800;color:var(--ink-light);">kcal</div>
+          </div>
+        </div>
+        <!-- Breakdown -->
+        <div style="flex:1;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div style="background:#F0FFF8;border-radius:10px;padding:8px;text-align:center;">
+              <div style="font-size:16px;font-weight:900;color:#3A8060;">${goal}</div>
+              <div style="font-size:9px;font-weight:800;color:#3A8060;text-transform:uppercase;letter-spacing:.08em;">Goal</div>
+            </div>
+            <div style="background:${remaining<0?"#FFF0F0":"#F8FFF8"};border-radius:10px;padding:8px;text-align:center;">
+              <div style="font-size:16px;font-weight:900;color:${remaining<0?"#D06060":"#3A8060"};">${Math.abs(remaining)}</div>
+              <div style="font-size:9px;font-weight:800;color:${remaining<0?"#D06060":"#3A8060"};text-transform:uppercase;letter-spacing:.08em;">${remaining<0?"Over":"Left"}</div>
+            </div>
+          </div>
+          <!-- Progress bar -->
+          <div style="height:8px;background:#F0F8F0;border-radius:4px;overflow:hidden;">
+            <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#90C8A8,${barColor});border-radius:4px;transition:width .6s;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:5px;">
+            <div style="font-size:10px;font-weight:700;color:var(--ink-light);">${pct}% of daily goal</div>
+            <button onclick="document.getElementById('goal-edit-row').style.display='flex'" style="background:none;border:none;font-size:10px;font-weight:800;color:#3A8060;cursor:pointer;">✏️ Edit goal</button>
+          </div>
+          <div id="goal-edit-row" style="display:none;align-items:center;gap:7px;margin-top:8px;">
+            <input id="goal-input" type="number" min="500" max="9999" value="${goal}" style="flex:1;border:1.5px solid #B8D8C0;border-radius:9px;padding:7px 11px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;color:var(--ink);background:white;outline:none;text-align:center;" onkeydown="if(event.key==='Enter'){event.stopPropagation();sv('calorie_goal',parseInt(this.value)||2000);renderFoodLog();}"/>
+            <button onclick="sv('calorie_goal',parseInt(document.getElementById('goal-input').value)||2000);renderFoodLog()" style="background:linear-gradient(135deg,#A8D8C0,#80C8A0);border:none;border-radius:9px;padding:8px 14px;font-size:12px;font-weight:900;color:white;cursor:pointer;font-family:'Nunito',sans-serif;">Save</button>
+            <button onclick="document.getElementById('goal-edit-row').style.display='none'" style="background:white;border:1.5px solid #EEE0EC;border-radius:9px;padding:7px 10px;font-size:12px;font-weight:800;color:var(--ink-light);cursor:pointer;">✕</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meal sections -->
+    ${MEALS.map(m=>mealSection(m)).join("")}
+
+    <!-- Weekly chart -->
+    <div style="background:white;border:1.5px solid #EEE0EC;border-radius:16px;padding:13px 14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(144,200,168,.06);">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#3A8060;margin-bottom:10px;">📊 Last 7 Days</div>
+      <div style="display:flex;gap:4px;align-items:flex-end;height:60px;">${weekBars}</div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;">
+        <div style="display:flex;gap:10px;">
+          ${[["#90C8A8","Under goal"],["#D4A840","Near goal"],["#D06060","Over goal"]].map(([col,lbl])=>`<div style="display:flex;align-items:center;gap:4px;font-size:9px;font-weight:700;color:var(--ink-light);"><div style="width:8px;height:8px;border-radius:50%;background:${col};"></div>${lbl}</div>`).join("")}
+        </div>
+        <div style="font-size:10px;font-weight:800;color:#3A8060;">Goal: ${goal} kcal</div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div style="background:white;border:1.5px solid #EEE0EC;border-radius:14px;padding:12px 14px;margin-bottom:14px;box-shadow:0 2px 6px rgba(144,200,168,.05);">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:6px;">📝 Notes</div>
+      <textarea style="width:100%;border:none;background:#FAFAFA;border-radius:8px;padding:8px 10px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;color:var(--ink);outline:none;resize:none;min-height:56px;line-height:1.6;" placeholder="How did you eat today? Water intake? How you felt..." oninput="saveFoodNote('${foodDate}',this.value)" onkeydown="event.stopPropagation()">${(log[foodDate]||{}).note||""}</textarea>
+    </div>
+  `;
+  // focus search if adding
+  if(addingMeal){setTimeout(()=>{document.getElementById("food-search")?.focus();},80);}
+}
+
+// Food log helpers
+function getFoodLog(date){const log=foodLog();return log[date]||{meals:{},note:""};}
+function setFoodLog(date,data){const log=foodLog();log[date]=data;saveFoodLog(log);}
+
+function addFoodEntry(date,meal,name,cals,serving){
+  const data=getFoodLog(date);
+  if(!data.meals)data.meals={};
+  if(!data.meals[meal])data.meals[meal]=[];
+  data.meals[meal].push({name,cals:parseInt(cals)||0,serving:serving||""});
+  setFoodLog(date,data);
+  addingMeal=null;foodSearchQ="";
+  renderFoodLog();
+}
+function addCustomFood(date,meal,name){
+  const calEl=document.getElementById("custom-cals");
+  const cals=parseInt(calEl?.value)||0;
+  if(!name&&!cals){return;}
+  addFoodEntry(date,meal,name||"Custom food",cals,"custom");
+}
+function removeFoodEntry(date,meal,idx){
+  const data=getFoodLog(date);
+  if(data.meals?.[meal]){data.meals[meal].splice(idx,1);}
+  setFoodLog(date,data);
+  renderFoodLog();
+}
+function saveFoodNote(date,note){
+  const data=getFoodLog(date);
+  data.note=note;
+  setFoodLog(date,data);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ── HOBBY PROJECT TRACKER ─────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+const HOBBY_CATS=[
+  {key:"craft",    label:"🧶 Crafts",        color:"#F0A8C0"},
+  {key:"art",      label:"🎨 Art",            color:"#B4A8D8"},
+  {key:"music",    label:"🎵 Music",          color:"#90B8D8"},
+  {key:"writing",  label:"✍️ Writing",        color:"#F0C090"},
+  {key:"cooking",  label:"🍳 Cooking",        color:"#90C8A8"},
+  {key:"garden",   label:"🌱 Gardening",      color:"#80C880"},
+  {key:"fitness",  label:"🏃 Fitness",        color:"#F0A8A8"},
+  {key:"reading",  label:"📚 Reading",        color:"#C8A8E0"},
+  {key:"diy",      label:"🔨 DIY",            color:"#D4A840"},
+  {key:"tech",     label:"💻 Tech / Coding",  color:"#88B8D8"},
+  {key:"travel",   label:"✈️ Travel",          color:"#A8C8E8"},
+  {key:"other",    label:"✦ Other",           color:"#D0C8E0"},
+];
+const HOBBY_STATUS=[
+  {key:"active",    label:"🔥 Active",     bg:"#FFF0F0",col:"#D06060"},
+  {key:"paused",    label:"⏸ Paused",     bg:"#FFF8DC",col:"#A08020"},
+  {key:"planning",  label:"💭 Planning",  bg:"#F0EEFF",col:"#7060A8"},
+  {key:"done",      label:"✅ Finished",  bg:"#EDFFF8",col:"#3A8860"},
+];
+
+function hobbyProjects(){return lda("hobby_projects_v1");}
+function saveHobbyProjects(a){sva("hobby_projects_v1",a);}
+function hpUID(){return "hp"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+
+let curHobbyId=null;   // null=list, id=detail
+let editingHobbyId=null;
+
+function renderHobbies(){
+  document.getElementById("accentStrip").style.background=ACCENT_STRIPS.hobbies;
+  if(curHobbyId)return renderHobbyDetail(curHobbyId);
+
+  const projects=hobbyProjects();
+  const active=projects.filter(p=>p.status==="active");
+  const paused=projects.filter(p=>p.status==="paused");
+  const planning=projects.filter(p=>p.status==="planning");
+  const done=projects.filter(p=>p.status==="done");
+
+  function projectCard(p){
+    const cat=HOBBY_CATS.find(c=>c.key===p.category)||HOBBY_CATS[HOBBY_CATS.length-1];
+    const st=HOBBY_STATUS.find(s=>s.key===p.status)||HOBBY_STATUS[0];
+    const steps=p.steps||[];
+    const doneSteps=steps.filter(s=>s.done).length;
+    const pct=steps.length?Math.round(doneSteps/steps.length*100):p.progress||0;
+    return`<div onclick="curHobbyId='${p.id}';renderHobbies()"
+      style="background:white;border:1.5px solid #EEE0EC;border-left:4px solid ${cat.color};border-radius:16px;overflow:hidden;margin-bottom:10px;cursor:pointer;box-shadow:0 2px 8px rgba(160,120,200,.06);transition:all .18s;"
+      onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(160,120,200,.13)'"
+      onmouseout="this.style.transform='';this.style.boxShadow='0 2px 8px rgba(160,120,200,.06)'">
+      ${(p.photos||[]).find(Boolean)?`<div style="height:100px;overflow:hidden;"><img src="${(p.photos||[]).find(Boolean)}" style="width:100%;height:100%;object-fit:cover;" alt=""/></div>`:""}
+      <div style="padding:13px 14px 13px ${(p.photos||[]).find(Boolean)?"14px":"14px"};">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:7px;">
+        <div>
+          <div style="font-size:15px;font-weight:900;color:var(--ink);line-height:1.25;">${p.emoji||cat.label.split(" ")[0]} ${p.name}</div>
+          <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">
+            <span style="font-size:10px;font-weight:800;background:${cat.color}22;color:${cat.color};border-radius:20px;padding:2px 9px;">${cat.label}</span>
+            <span style="font-size:10px;font-weight:800;background:${st.bg};color:${st.col};border-radius:20px;padding:2px 9px;">${st.label}</span>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:${cat.color};line-height:1;">${pct}%</div>
+          <div style="font-size:9px;font-weight:800;color:var(--ink-light);">${steps.length?`${doneSteps}/${steps.length} steps`:"progress"}</div>
+        </div>
+      </div>
+      ${p.description?`<div style="font-size:12px;font-weight:600;color:var(--ink-light);line-height:1.5;margin-bottom:8px;">${p.description.slice(0,90)}${p.description.length>90?"…":""}</div>`:""}
+      <!-- Progress bar -->
+      <div style="height:5px;background:rgba(200,180,220,.2);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,${cat.color},${cat.color}CC);border-radius:3px;transition:width .4s;"></div>
+      </div>
+      ${p.nextStep?`<div style="margin-top:8px;font-size:11px;font-weight:700;color:var(--ink-mid);">→ ${p.nextStep}</div>`:""}
+      </div>
+    </div>`;
+  }
+
+  function groupSection(label,list){
+    if(!list.length)return"";
+    return`<div style="margin-bottom:6px;"><div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-light);margin-bottom:8px;">${label} (${list.length})</div>${list.map(projectCard).join("")}</div>`;
+  }
+
+  document.getElementById("pageInner").innerHTML=`
+    <div class="section-heading">🎨 Hobby Projects</div>
+    <div class="section-sub">Your creative pursuits, tracked with love 🌸</div>
+    <div class="divider"></div>
+
+    <button onclick="curHobbyId='new';renderHobbies()" style="width:100%;background:linear-gradient(135deg,#D8B8F0,#B898D8);border:none;border-radius:14px;padding:12px;font-size:13px;font-weight:900;color:white;cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:16px;box-shadow:0 3px 12px rgba(160,120,200,.3);">🎨 New Hobby Project</button>
+
+    <!-- Stats strip -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px;">
+      ${HOBBY_STATUS.map(s=>{
+        const n=projects.filter(p=>p.status===s.key).length;
+        return`<div style="background:${s.bg};border-radius:12px;padding:9px 4px;text-align:center;border:1.5px solid ${s.col}30;">
+          <div style="font-size:18px;font-weight:900;color:${s.col};font-family:'Cormorant Garamond',serif;">${n}</div>
+          <div style="font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:${s.col};margin-top:2px;">${s.label.split(" ").slice(1).join(" ")}</div>
+        </div>`;
+      }).join("")}
+    </div>
+
+    ${projects.length===0?`<div style="text-align:center;padding:48px 20px;"><div style="font-size:52px;margin-bottom:14px;">🎨</div><div style="font-family:'Dancing Script',cursive;font-size:22px;color:var(--ink-light);">What are you creating?</div><div style="font-size:12px;font-weight:700;color:var(--ink-light);margin-top:8px;">Add your first hobby project above 🌸</div></div>`:""}
+    ${groupSection("🔥 Active",active)}
+    ${groupSection("💭 Planning",planning)}
+    ${groupSection("⏸ Paused",paused)}
+    ${groupSection("✅ Finished",done)}
+  `;
+}
+
+function renderHobbyDetail(id){
+  const isNew=id==="new";
+  const all=hobbyProjects();
+  const p=isNew
+    ?{id:hpUID(),name:"",emoji:"🎨",category:"art",status:"active",description:"",progress:0,steps:[],materials:[],notes:"",nextStep:"",inspiration:""}
+    :all.find(p=>p.id===id)||{id,name:"",emoji:"🎨",category:"other",status:"active",description:"",progress:0,steps:[],materials:[],notes:"",nextStep:"",inspiration:""};
+
+  const cat=HOBBY_CATS.find(c=>c.key===p.category)||HOBBY_CATS[HOBBY_CATS.length-1];
+  const steps=p.steps||[];
+  const materials=p.materials||[];
+  const doneSteps=steps.filter(s=>s.done).length;
+  const pct=steps.length?Math.round(doneSteps/steps.length*100):p.progress||0;
+
+  document.getElementById("pageInner").innerHTML=`
+    <div class="nav-row">
+      <button class="nav-btn" onclick="curHobbyId=null;renderHobbies()">◀ All Projects</button>
+      ${!isNew?`<button class="nav-btn" style="color:#C07070;border-color:#F0C0C0;" onclick="deleteHobbyProject('${p.id}')">🗑️</button>`:""}
+    </div>
+
+    <!-- Header form -->
+    <div style="background:linear-gradient(135deg,#F8F0FF,#F0E8FF);border:1.5px solid ${cat.color}44;border-radius:18px;padding:14px;margin-bottom:14px;">
+      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;">
+        <input id="hp-emoji" value="${p.emoji||"🎨"}" style="width:52px;font-size:28px;border:1.5px solid #EEE0EC;border-radius:12px;padding:6px;text-align:center;outline:none;background:white;flex-shrink:0;"/>
+        <input id="hp-name" value="${p.name}" placeholder="Project name..." style="flex:1;border:1.5px solid #EEE0EC;border-radius:12px;padding:11px 13px;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ink);background:white;outline:none;" onkeydown="event.stopPropagation()"/>
+      </div>
+      <textarea id="hp-desc" style="width:100%;border:1.5px solid #EEE0EC;border-radius:11px;padding:9px 12px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;color:var(--ink);background:white;outline:none;resize:none;min-height:60px;line-height:1.65;margin-bottom:10px;" placeholder="What is this project? What do you want to create?" onkeydown="event.stopPropagation()">${p.description||""}</textarea>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div>
+          <div style="font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:4px;">Category</div>
+          <select id="hp-cat" style="width:100%;border:1.5px solid #EEE0EC;border-radius:10px;padding:8px 10px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:white;outline:none;">
+            ${HOBBY_CATS.map(c=>`<option value="${c.key}" ${p.category===c.key?"selected":""}>${c.label}</option>`).join("")}
+          </select>
+        </div>
+        <div>
+          <div style="font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:4px;">Status</div>
+          <select id="hp-status" style="width:100%;border:1.5px solid #EEE0EC;border-radius:10px;padding:8px 10px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:white;outline:none;">
+            ${HOBBY_STATUS.map(s=>`<option value="${s.key}" ${p.status===s.key?"selected":""}>${s.label}</option>`).join("")}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div style="background:white;border:1.5px solid #EEE0EC;border-radius:14px;padding:12px 14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(160,120,200,.06);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div style="font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);">📊 Progress</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:${cat.color};">${pct}%</div>
+      </div>
+      <div style="height:8px;background:rgba(200,180,220,.2);border-radius:4px;overflow:hidden;margin-bottom:10px;">
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,${cat.color},${cat.color}CC);border-radius:4px;transition:width .4s;"></div>
+      </div>
+      ${steps.length===0?`<div style="font-size:11px;font-weight:700;color:var(--ink-light);">Add steps below to track progress automatically</div>`:`<div style="font-size:11px;font-weight:700;color:var(--ink-light);">${doneSteps} of ${steps.length} steps completed</div>`}
+    </div>
+
+    <!-- Steps checklist -->
+    <div style="background:white;border:1.5px solid #EEE0EC;border-radius:14px;padding:12px 14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(160,120,200,.06);">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:9px;">✅ Steps to Complete</div>
+      ${steps.map((step,i)=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(200,180,220,.12);">
+          <div onclick="toggleHobbyStep('${p.id}',${i})" style="width:22px;height:22px;border-radius:50%;border:2px solid ${step.done?"transparent":"${cat.color}"};background:${step.done?`linear-gradient(135deg,${cat.color},${cat.color}CC)`:"white"};cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:white;transition:all .18s;">${step.done?"✓":""}</div>
+          <div style="flex:1;font-size:13px;font-weight:700;color:${step.done?"var(--ink-light)":"var(--ink)"};${step.done?"text-decoration:line-through;":""}">${step.text}</div>
+          <button onclick="deleteHobbyStep('${p.id}',${i})" style="background:none;border:none;color:#D8C0D8;cursor:pointer;font-size:12px;">✕</button>
+        </div>`).join("")}
+      <div style="display:flex;gap:7px;margin-top:9px;">
+        <input id="hp-step-in" placeholder="Add a step..." style="flex:1;border:1.5px solid #EEE0EC;border-radius:24px;padding:7px 13px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:#FAFAFA;outline:none;" onkeydown="if(event.key==='Enter'){event.stopPropagation();addHobbyStep('${p.id}')}"/>
+        <button onclick="addHobbyStep('${p.id}')" style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#D8B8F0,#B898D8);border:none;color:white;font-size:18px;cursor:pointer;flex-shrink:0;">+</button>
+      </div>
+    </div>
+
+    <!-- Materials / Supply list -->
+    <div style="background:white;border:1.5px solid #EEE0EC;border-radius:14px;padding:12px 14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(160,120,200,.06);">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:9px;">🛍️ Materials & Supplies</div>
+      ${materials.map((m,i)=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(200,180,220,.12);">
+          <div onclick="toggleHobbyMaterial('${p.id}',${i})" style="width:20px;height:20px;border-radius:4px;border:2px solid ${m.have?"transparent":"#D0C0E8"};background:${m.have?"linear-gradient(135deg,#D8B8F0,#B898D8)":"white"};cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:white;transition:all .18s;">${m.have?"✓":""}</div>
+          <div style="flex:1;font-size:12px;font-weight:700;color:${m.have?"var(--ink-light)":"var(--ink)"};${m.have?"text-decoration:line-through;":""}">${m.text}</div>
+          ${m.cost?`<span style="font-size:11px;font-weight:800;color:#3A8060;">$${m.cost}</span>`:""}
+          <button onclick="deleteHobbyMaterial('${p.id}',${i})" style="background:none;border:none;color:#D8C0D8;cursor:pointer;font-size:12px;">✕</button>
+        </div>`).join("")}
+      <div style="display:flex;gap:7px;margin-top:9px;">
+        <input id="hp-mat-in" placeholder="Add material or supply..." style="flex:1;border:1.5px solid #EEE0EC;border-radius:24px;padding:7px 13px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:#FAFAFA;outline:none;" onkeydown="if(event.key==='Enter'){event.stopPropagation();addHobbyMaterial('${p.id}')}"/>
+        <input id="hp-mat-cost" type="number" min="0" placeholder="$" style="width:54px;border:1.5px solid #EEE0EC;border-radius:24px;padding:7px 8px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);background:#FAFAFA;outline:none;text-align:center;" onkeydown="event.stopPropagation()"/>
+        <button onclick="addHobbyMaterial('${p.id}')" style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#D8B8F0,#B898D8);border:none;color:white;font-size:18px;cursor:pointer;flex-shrink:0;">+</button>
+      </div>
+    </div>
+
+    <!-- Next step + Inspiration -->
+    <div style="background:white;border:1.5px solid #EEE0EC;border-radius:14px;padding:12px 14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(160,120,200,.06);">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:6px;">→ Next Action</div>
+      <input id="hp-next" value="${p.nextStep||""}" placeholder="What's the very next step you'll take?" style="width:100%;border:1.5px solid #EEE0EC;border-radius:10px;padding:9px 12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--ink);background:#FAFAFA;outline:none;margin-bottom:12px;" onkeydown="event.stopPropagation()"/>
+      <div style="font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:6px;">💫 Inspiration & Vision</div>
+      <textarea id="hp-inspo" style="width:100%;border:1.5px solid #EEE0EC;border-radius:10px;padding:9px 12px;font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:${cat.color};background:#FAFAFA;outline:none;resize:none;min-height:60px;line-height:1.65;" placeholder="Why does this project matter to you? What will it look, feel, sound like when done?" onkeydown="event.stopPropagation()">${p.inspiration||""}</textarea>
+    </div>
+
+    <!-- Photos (up to 3) -->
+    <div style="background:white;border:1.5px solid #EEE0EC;border-radius:14px;padding:12px 14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(160,120,200,.06);">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:9px;">📷 Photos (up to 3)</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+        ${[0,1,2].map(i=>{
+          const photo=(p.photos||[])[i];
+          return`<div style="aspect-ratio:1;border-radius:12px;overflow:hidden;background:#F5F0FF;position:relative;display:flex;align-items:center;justify-content:center;">
+            ${photo
+              ?`<img src="${photo}" style="width:100%;height:100%;object-fit:cover;" alt=""/>
+                <button onclick="removeHobbyPhoto('${p.id}',${i})" style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,.5);border:none;border-radius:50%;width:22px;height:22px;color:white;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;line-height:1;">✕</button>`
+              :`<label style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:#B898D8;font-family:'Nunito',sans-serif;">
+                  <span style="font-size:24px;">📷</span>
+                  <span style="font-size:9px;font-weight:800;">Photo ${i+1}</span>
+                  <input type="file" accept="image/*" style="display:none;" onchange="addHobbyPhoto(event,'${p.id}',${i})"/>
+                </label>`}
+          </div>`;
+        }).join("")}
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div style="background:white;border:1.5px solid #EEE0EC;border-radius:14px;padding:12px 14px;margin-bottom:14px;box-shadow:0 2px 6px rgba(160,120,200,.06);">
+      <div style="font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:6px;">📝 Notes & Log</div>
+      <textarea id="hp-notes" style="width:100%;border:none;background:#FAFAFA;border-radius:10px;padding:9px 12px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;color:var(--ink);outline:none;resize:none;min-height:80px;line-height:1.7;" placeholder="Progress updates, lessons learned, ideas, links..." onkeydown="event.stopPropagation()">${p.notes||""}</textarea>
+    </div>
+
+    <button onclick="saveHobbyProject('${p.id}','${isNew}')" style="width:100%;background:linear-gradient(135deg,#D8B8F0,#B898D8);border:none;border-radius:14px;padding:14px;font-size:14px;font-weight:900;color:white;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 14px rgba(160,120,200,.35);">💾 Save Project</button>
+  `;
+}
+
+// ── Hobby helpers ──────────────────────────────────────────────────────────────
+function saveHobbyProject(id,isNew){
+  const all=isNew==="true"?hobbyProjects():hobbyProjects().filter(p=>p.id!==id);
+  const existing=hobbyProjects().find(p=>p.id===id)||{steps:[],materials:[]};
+  const proj={
+    id,
+    name:document.getElementById("hp-name")?.value?.trim()||"Untitled",
+    emoji:document.getElementById("hp-emoji")?.value?.trim()||"🎨",
+    description:document.getElementById("hp-desc")?.value||"",
+    category:document.getElementById("hp-cat")?.value||"other",
+    status:document.getElementById("hp-status")?.value||"active",
+    steps:existing.steps||[],
+    materials:existing.materials||[],
+    photos:existing.photos||[],
+    nextStep:document.getElementById("hp-next")?.value?.trim()||"",
+    inspiration:document.getElementById("hp-inspo")?.value||"",
+    notes:document.getElementById("hp-notes")?.value||"",
+    progress:existing.progress||0,
+    created:existing.created||Date.now(),
+  };
+  all.push(proj);
+  saveHobbyProjects(all);
+  curHobbyId=id;
+  showToast("Project saved 🌸");
+  renderHobbies();
+}
+function deleteHobbyProject(id){
+  if(!confirm("Delete this project?"))return;
+  saveHobbyProjects(hobbyProjects().filter(p=>p.id!==id));
+  curHobbyId=null;renderHobbies();
+}
+function toggleHobbyStep(id,idx){
+  const all=hobbyProjects();const p=all.find(p=>p.id===id);if(!p)return;
+  if(!p.steps)p.steps=[];
+  p.steps[idx].done=!p.steps[idx].done;
+  saveHobbyProjects(all);curHobbyId=id;renderHobbies();
+}
+function addHobbyStep(id){
+  const inp=document.getElementById("hp-step-in");
+  const text=inp?.value?.trim();if(!text)return;
+  const all=hobbyProjects();const p=all.find(p=>p.id===id);if(!p)return;
+  if(!p.steps)p.steps=[];
+  p.steps.push({text,done:false});
+  saveHobbyProjects(all);curHobbyId=id;renderHobbies();
+}
+function deleteHobbyStep(id,idx){
+  const all=hobbyProjects();const p=all.find(p=>p.id===id);if(!p)return;
+  p.steps.splice(idx,1);saveHobbyProjects(all);curHobbyId=id;renderHobbies();
+}
+function toggleHobbyMaterial(id,idx){
+  const all=hobbyProjects();const p=all.find(p=>p.id===id);if(!p)return;
+  if(!p.materials)p.materials=[];
+  p.materials[idx].have=!p.materials[idx].have;
+  saveHobbyProjects(all);curHobbyId=id;renderHobbies();
+}
+function addHobbyMaterial(id){
+  const inp=document.getElementById("hp-mat-in");
+  const costInp=document.getElementById("hp-mat-cost");
+  const text=inp?.value?.trim();if(!text)return;
+  const cost=parseFloat(costInp?.value)||0;
+  const all=hobbyProjects();const p=all.find(p=>p.id===id);if(!p)return;
+  if(!p.materials)p.materials=[];
+  p.materials.push({text,have:false,cost:cost||""});
+  saveHobbyProjects(all);curHobbyId=id;renderHobbies();
+}
+function addHobbyPhoto(event,id,slot){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const all=hobbyProjects();const p=all.find(p=>p.id===id);if(!p)return;
+    if(!p.photos)p.photos=[];
+    p.photos[slot]=e.target.result;
+    saveHobbyProjects(all);curHobbyId=id;renderHobbies();
+  };
+  reader.readAsDataURL(file);
+}
+function removeHobbyPhoto(id,slot){
+  const all=hobbyProjects();const p=all.find(p=>p.id===id);if(!p)return;
+  if(p.photos)p.photos[slot]=null;
+  saveHobbyProjects(all);curHobbyId=id;renderHobbies();
+}
+function deleteHobbyMaterial(id,idx){
+  const all=hobbyProjects();const p=all.find(p=>p.id===id);if(!p)return;
+  p.materials.splice(idx,1);saveHobbyProjects(all);curHobbyId=id;renderHobbies();
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
