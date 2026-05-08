@@ -1518,17 +1518,8 @@ function renderTodo(){
       <button onclick="showSection('kanban')" class="td-chip" style="color:#6858A8;border-color:#C8B8E8;">🗂️ Kanban</button>
     </div>
 
-    <!-- Recurring Tasks — compact view -->
-    ${recurringTasks().length?`<div style="background:white;border:1.5px solid #EEE0EC;border-radius:14px;padding:10px 14px;margin-bottom:14px;box-shadow:0 1px 6px rgba(180,120,160,.05);">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-light);">🔁 Recurring (${recurringTasks().length})</div>
-        <button onclick="todoFilter='Recurring';renderTodo()" style="background:none;border:none;font-size:11px;font-weight:800;color:var(--rose-dark);cursor:pointer;font-family:'Nunito',sans-serif;">View all ›</button>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;">
-        ${recurringTasks().slice(0,5).map(rt=>`<span style="background:var(--blush);color:var(--rose-dark);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:800;">${rt.text} · ${rt.freq}</span>`).join("")}
-        ${recurringTasks().length>5?`<span style="font-size:11px;font-weight:700;color:var(--ink-light);align-self:center;">+${recurringTasks().length-5} more</span>`:""}
-      </div>
-    </div>`:""}
+    <!-- Recurring Tasks — full panel with edit support -->
+    ${renderRecurringPanel()}
 
     <!-- All Tasks -->
     <div class="td-section-hdr">🌷 ${todoFilter==="Done"?"Completed":todoFilter==="All"?"All Tasks":todoFilter+" Tasks"}</div>
